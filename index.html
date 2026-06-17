@@ -4,509 +4,680 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hrista Thapa — Full-Stack Developer</title>
+<meta name="description" content="Portfolio of Hrista Thapa, full-stack developer and IT engineering student.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #FAF9F6;
-    --ink: #1A1B1E;
-    --accent: #4C5FD5;
-    --accent-soft: #ECEEFB;
-    --gray: #6B6D76;
-    --line: #E4E2DC;
-    --paper: #FFFFFF;
+    --bg-editor: #1E1E1E;
+    --bg-sidebar: #252526;
+    --bg-titlebar: #323233;
+    --bg-tabs: #2D2D30;
+    --bg-active-tab: #1E1E1E;
+    --bg-terminal: #181818;
+    --border: #3C3C3C;
+    --text: #D4D4D4;
+    --text-dim: #858585;
+    --kw: #569CD6;
+    --type: #4EC9B0;
+    --str: #CE9178;
+    --comment: #6A9955;
+    --func: #DCDCAA;
+    --num: #B5CEA8;
+    --accent: #007ACC;
+    --error: #F48771;
+    --tab-active-border: #007ACC;
   }
 
   *{ margin:0; padding:0; box-sizing:border-box; }
 
-  html{ scroll-behavior:smooth; }
-
   body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Inter', sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
+    background:var(--bg-editor);
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    overflow:hidden;
+    height:100vh;
   }
 
   @media (prefers-reduced-motion: reduce){
-    html{ scroll-behavior:auto; }
     *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
   }
 
-  a{ color:var(--accent); text-decoration:none; }
+  ::selection{ background:#264F78; }
+
+  a{ color:var(--kw); text-decoration:none; }
   a:hover{ text-decoration:underline; }
-  a:focus-visible, button:focus-visible{
-    outline:2px solid var(--accent);
-    outline-offset:3px;
-    border-radius:2px;
-  }
+  *:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
 
-  .wrap{
-    max-width:760px;
-    margin:0 auto;
-    padding:0 28px;
-  }
-
-  /* ---------- Nav ---------- */
-  header{
-    position:sticky;
-    top:0;
-    background:rgba(250,249,246,0.88);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-    z-index:10;
-  }
-  nav{
-    max-width:760px;
-    margin:0 auto;
-    padding:18px 28px;
+  .ide{
     display:flex;
-    justify-content:space-between;
+    flex-direction:column;
+    height:100vh;
+  }
+
+  /* ---------- Title bar ---------- */
+  .titlebar{
+    background:var(--bg-titlebar);
+    height:32px;
+    display:flex;
     align-items:center;
+    padding:0 12px;
+    gap:8px;
+    flex-shrink:0;
+    border-bottom:1px solid var(--border);
   }
-  .nav-mark{
-    font-family:'Fraunces', serif;
-    font-weight:600;
-    font-size:1.05rem;
-    letter-spacing:-0.01em;
+  .dots{ display:flex; gap:7px; }
+  .dot{ width:11px; height:11px; border-radius:50%; }
+  .dot.red{ background:#FF5F56; }
+  .dot.yellow{ background:#FFBD2E; }
+  .dot.green{ background:#27C93F; }
+  .titlebar-label{
+    flex:1;
+    text-align:center;
+    font-size:12px;
+    color:var(--text-dim);
   }
-  .nav-links{
+
+  /* ---------- Main body: sidebar + editor ---------- */
+  .body-row{
+    flex:1;
     display:flex;
-    gap:24px;
-    font-size:0.88rem;
-    color:var(--gray);
-  }
-  .nav-links a{ color:var(--gray); }
-  .nav-links a:hover{ color:var(--ink); }
-
-  /* ---------- Hero ---------- */
-  .hero{
-    padding:88px 0 64px;
-  }
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.78rem;
-    color:var(--accent);
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    display:block;
-    margin-bottom:18px;
-    opacity:0;
-    animation:rise 0.6s ease forwards;
-    animation-delay:0.05s;
-  }
-  .hero h1{
-    font-family:'Fraunces', serif;
-    font-weight:500;
-    font-size:clamp(2.4rem, 6vw, 3.4rem);
-    line-height:1.08;
-    letter-spacing:-0.01em;
-    max-width:11ch;
-    opacity:0;
-    animation:rise 0.7s ease forwards;
-    animation-delay:0.15s;
-  }
-  .hero h1 em{
-    font-style:italic;
-    color:var(--accent);
-  }
-  .hero p{
-    margin-top:22px;
-    max-width:46ch;
-    color:var(--gray);
-    font-size:1.05rem;
-    opacity:0;
-    animation:rise 0.7s ease forwards;
-    animation-delay:0.28s;
-  }
-  .hero-links{
-    margin-top:30px;
-    display:flex;
-    gap:18px;
-    flex-wrap:wrap;
-    opacity:0;
-    animation:rise 0.7s ease forwards;
-    animation-delay:0.4s;
-  }
-  .btn{
-    font-family:'Inter', sans-serif;
-    font-weight:500;
-    font-size:0.92rem;
-    padding:11px 20px;
-    border-radius:6px;
-    border:1px solid var(--ink);
-    color:var(--ink);
-    transition:background 0.18s, color 0.18s;
-  }
-  .btn:hover{
-    background:var(--ink);
-    color:var(--bg);
-    text-decoration:none;
-  }
-  .btn.ghost{
-    border-color:var(--line);
-    color:var(--gray);
-  }
-  .btn.ghost:hover{
-    background:transparent;
-    color:var(--ink);
-    border-color:var(--ink);
-  }
-
-  @keyframes rise{
-    from{ opacity:0; transform:translateY(10px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-
-  /* ---------- Section scaffolding ---------- */
-  section{
-    padding:56px 0;
-    border-top:1px solid var(--line);
-  }
-  .section-head{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    margin-bottom:36px;
-    gap:16px;
-  }
-  .section-head .label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.74rem;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--gray);
-  }
-  .section-head h2{
-    font-family:'Fraunces', serif;
-    font-weight:500;
-    font-size:1.6rem;
-    letter-spacing:-0.01em;
-  }
-
-  /* ---------- About ---------- */
-  .about p{
-    max-width:58ch;
-    color:#33353B;
-    font-size:1.02rem;
-  }
-  .about p + p{ margin-top:14px; }
-
-  /* ---------- Stack diagram (signature element) ---------- */
-  .stack-diagram{
-    margin-top:8px;
-    border:1px solid var(--line);
-    border-radius:10px;
     overflow:hidden;
-    background:var(--paper);
+    min-height:0;
   }
-  .stack-row{
-    display:grid;
-    grid-template-columns:120px 1fr;
-    border-bottom:1px solid var(--line);
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:220px;
+    background:var(--bg-sidebar);
+    border-right:1px solid var(--border);
+    flex-shrink:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
   }
-  .stack-row:last-child{ border-bottom:none; }
-  .stack-tier{
+  .sidebar-section-title{
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--text-dim);
+    padding:14px 16px 8px;
+    text-transform:uppercase;
+  }
+  .file-tree{ padding-bottom:12px; }
+  .file-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 16px;
+    font-size:13px;
+    color:var(--text);
+    cursor:pointer;
+    white-space:nowrap;
+    border-left:2px solid transparent;
+  }
+  .file-item:hover{ background:#2A2D2E; }
+  .file-item.active{
+    background:#37373D;
+    border-left:2px solid var(--accent);
+  }
+  .file-icon{ font-size:13px; width:14px; text-align:center; flex-shrink:0; }
+  .icon-js{ color:var(--func); }
+  .icon-json{ color:var(--type); }
+  .icon-md{ color:var(--kw); }
+
+  .sidebar-footer{
+    margin-top:auto;
+    padding:14px 16px;
+    border-top:1px solid var(--border);
+    font-size:12px;
+    color:var(--text-dim);
+  }
+  .sidebar-footer a{ color:var(--text-dim); display:block; margin-top:6px; }
+  .sidebar-footer a:hover{ color:var(--kw); }
+
+  /* ---------- Editor pane ---------- */
+  .editor-pane{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+
+  .tabs{
+    display:flex;
+    background:var(--bg-tabs);
+    border-bottom:1px solid var(--border);
+    overflow-x:auto;
+    flex-shrink:0;
+  }
+  .tab{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 14px;
+    font-size:13px;
+    color:var(--text-dim);
+    border-right:1px solid var(--border);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .tab.active{
+    background:var(--bg-active-tab);
+    color:var(--text);
+    border-top:2px solid var(--tab-active-border);
+    padding-top:7px;
+  }
+  .tab:hover{ color:var(--text); }
+  .tab .close{ opacity:0.5; font-size:14px; }
+  .tab .close:hover{ opacity:1; }
+
+  .code-area{
+    flex:1;
+    overflow-y:auto;
+    padding:24px 0 40px;
+    min-height:0;
+  }
+  .code-line{
+    display:flex;
+    padding:0 20px;
+    min-height:21px;
+    line-height:21px;
+  }
+  .line-num{
+    width:36px;
+    text-align:right;
+    margin-right:20px;
+    color:#4B4B4B;
+    flex-shrink:0;
+    user-select:none;
+    font-size:13px;
+  }
+  .line-content{
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .indent{ padding-left:24px; }
+  .indent2{ padding-left:48px; }
+
+  .c-kw{ color:var(--kw); }
+  .c-type{ color:var(--type); }
+  .c-str{ color:var(--str); }
+  .c-comment{ color:var(--comment); }
+  .c-func{ color:var(--func); }
+  .c-num{ color:var(--num); }
+  .c-text{ color:var(--text); }
+  .c-punct{ color:var(--text); }
+
+  .chip-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:#2A2D2E;
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 8px;
+    margin:2px 4px 2px 0;
+    font-size:12.5px;
+    color:var(--type);
+  }
+  .chip-link:hover{ border-color:var(--accent); text-decoration:none; }
+
+  .btn-run{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#0E639C;
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    padding:6px 14px;
     font-family:'JetBrains Mono', monospace;
-    font-size:0.74rem;
-    color:var(--gray);
+    font-size:13px;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .btn-run:hover{ background:#1177BB; }
+
+  /* typing reveal */
+  .type-target{ }
+  .blink-cursor{
+    display:inline-block;
+    width:7px;
+    height:15px;
+    background:var(--text);
+    margin-left:2px;
+    animation:blink 1s step-end infinite;
+    vertical-align:middle;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---------- Terminal ---------- */
+  .terminal-wrap{
+    flex-shrink:0;
+    border-top:1px solid var(--border);
+    background:var(--bg-terminal);
+    display:flex;
+    flex-direction:column;
+    height:220px;
+    transition:height 0.2s ease;
+  }
+  .terminal-wrap.collapsed{ height:36px; }
+
+  .terminal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 16px;
+    height:36px;
+    flex-shrink:0;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    user-select:none;
+  }
+  .terminal-header-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:12px;
+    color:var(--text-dim);
     text-transform:uppercase;
     letter-spacing:0.05em;
-    padding:16px 18px;
-    border-right:1px solid var(--line);
-    display:flex;
-    align-items:center;
   }
-  .stack-items{
-    padding:14px 18px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    align-items:center;
+  .terminal-toggle-icon{
+    color:var(--text-dim);
+    font-size:11px;
+    transition:transform 0.2s;
   }
-  .chip{
-    font-size:0.88rem;
-    font-weight:500;
-    padding:5px 12px;
-    border-radius:5px;
-    background:var(--accent-soft);
-    color:#3B4AA8;
-  }
-  .chip.alt{
-    background:#F1EFE9;
-    color:#56524A;
-  }
+  .terminal-wrap.collapsed .terminal-toggle-icon{ transform:rotate(-90deg); }
 
-  .skills-flat{
-    margin-top:36px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
+  .terminal-body{
+    flex:1;
+    overflow-y:auto;
+    padding:10px 16px;
+    font-size:13px;
   }
-  .skills-flat .chip{
+  .term-line{ margin-bottom:4px; white-space:pre-wrap; word-break:break-word; }
+  .term-prompt{ color:var(--type); }
+  .term-path{ color:var(--kw); }
+  .term-input-row{
+    display:flex;
+    align-items:center;
+    padding:4px 16px 12px;
+    flex-shrink:0;
+  }
+  .term-input-row .term-prompt{ margin-right:6px; }
+  #term-input{
+    flex:1;
     background:transparent;
-    border:1px solid var(--line);
-    color:var(--ink);
+    border:none;
+    outline:none;
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
   }
 
-  /* ---------- Projects ---------- */
-  .project{
-    padding:28px 0;
-    border-bottom:1px solid var(--line);
-  }
-  .project:last-child{ border-bottom:none; }
-  .project-top{
+  /* ---------- Status bar ---------- */
+  .statusbar{
+    background:var(--accent);
+    color:#fff;
+    height:22px;
     display:flex;
+    align-items:center;
     justify-content:space-between;
-    align-items:baseline;
-    gap:14px;
-    flex-wrap:wrap;
+    padding:0 12px;
+    font-size:11.5px;
+    flex-shrink:0;
   }
-  .project h3{
-    font-family:'Fraunces', serif;
-    font-weight:500;
-    font-size:1.22rem;
-  }
-  .project-links{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.78rem;
-    display:flex;
-    gap:14px;
-  }
-  .project p{
-    margin-top:10px;
-    color:var(--gray);
-    max-width:56ch;
-    font-size:0.97rem;
-  }
-  .project-tags{
-    margin-top:14px;
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .tag{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.72rem;
-    color:var(--gray);
-    border:1px solid var(--line);
-    padding:3px 9px;
-    border-radius:4px;
-  }
-  .project-note{
-    margin-top:16px;
-    font-size:0.88rem;
-    color:#9A968C;
-    border-left:2px solid var(--line);
-    padding-left:12px;
-  }
+  .statusbar-left, .statusbar-right{ display:flex; gap:16px; }
 
-  /* ---------- Education ---------- */
-  .edu-row{
-    display:flex;
-    justify-content:space-between;
-    gap:16px;
-    flex-wrap:wrap;
-    align-items:baseline;
-  }
-  .edu-row h3{
-    font-family:'Fraunces', serif;
-    font-weight:500;
-    font-size:1.15rem;
-  }
-  .edu-row .meta{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.8rem;
-    color:var(--gray);
-  }
-  .edu-sub{
-    margin-top:6px;
-    color:var(--gray);
-    font-size:0.95rem;
-  }
+  /* ---------- Mobile ---------- */
+  .mobile-tree-toggle{ display:none; }
 
-  /* ---------- Contact / Footer ---------- */
-  .contact p{
-    max-width:48ch;
-    color:var(--gray);
-    margin-bottom:28px;
-  }
-  .contact-grid{
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px;
-  }
-  footer{
-    padding:32px 0 48px;
-    text-align:center;
-    color:#A8A59B;
-    font-size:0.82rem;
-    font-family:'JetBrains Mono', monospace;
-  }
-
-  @media (max-width: 600px){
-    .hero{ padding:64px 0 48px; }
-    .stack-row{ grid-template-columns:1fr; }
-    .stack-tier{ border-right:none; border-bottom:1px solid var(--line); padding:10px 18px; }
-    .nav-links{ gap:14px; font-size:0.82rem; }
+  @media (max-width: 760px){
+    .sidebar{
+      position:absolute;
+      left:0; top:32px; bottom:0;
+      z-index:20;
+      transform:translateX(-100%);
+      transition:transform 0.2s ease;
+      box-shadow:2px 0 12px rgba(0,0,0,0.4);
+    }
+    .sidebar.open{ transform:translateX(0); }
+    .mobile-tree-toggle{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      background:transparent;
+      border:none;
+      color:var(--text-dim);
+      font-family:'JetBrains Mono', monospace;
+      font-size:12px;
+      padding:6px 10px;
+      cursor:pointer;
+    }
+    .terminal-wrap{ height:180px; }
+    .line-num{ width:24px; margin-right:10px; }
+    .code-line{ padding:0 12px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <nav>
-    <span class="nav-mark">Hrista Thapa</span>
-    <div class="nav-links">
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </nav>
-</header>
+<div class="ide">
 
-<main class="wrap">
-
-  <section class="hero" style="border-top:none;">
-    <span class="eyebrow">IT Engineering Student · Full-Stack Developer</span>
-    <h1>Building things end&#8209;to&#8209;end, from <em>database to interface</em>.</h1>
-    <p>I'm a final-year IT Engineering student at Cosmos College of Management and Technology, focused on full-stack development with the MERN stack. I like understanding a problem all the way down — from how data is modeled to how it ends up on someone's screen.</p>
-    <div class="hero-links">
-      <a class="btn" href="https://github.com/Hrista39" target="_blank" rel="noopener">View GitHub →</a>
-      <a class="btn ghost" href="#contact">Get in touch</a>
+  <div class="titlebar">
+    <div class="dots">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
     </div>
-  </section>
+    <div class="titlebar-label">hrista-thapa-portfolio — VS Code</div>
+    <button class="mobile-tree-toggle" id="mobileTreeToggle" aria-label="Toggle file explorer">☰ files</button>
+  </div>
 
-  <section id="about" class="about">
-    <div class="section-head">
-      <h2>About</h2>
-      <span class="label">01</span>
-    </div>
-    <p>I'm currently completing my final year of IT Engineering at Cosmos College of Management and Technology. Over the course of my degree I've moved from foundational programming into building full applications — pairing a React front end with an Express/Node back end and MongoDB for storage.</p>
-    <p>I'm drawn to full-stack work specifically because I like owning a feature completely: designing the schema, writing the API, and shipping the interface that makes it usable. Alongside the MERN stack, I work in C++ and Python, and use Git for version control on everything I build.</p>
-  </section>
+  <div class="body-row">
 
-  <section id="stack">
-    <div class="section-head">
-      <h2>Stack</h2>
-      <span class="label">02</span>
-    </div>
-    <div class="stack-diagram">
-      <div class="stack-row">
-        <div class="stack-tier">Interface</div>
-        <div class="stack-items">
-          <span class="chip">HTML</span>
-          <span class="chip">CSS</span>
-          <span class="chip">JavaScript</span>
-          <span class="chip">React</span>
-        </div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section-title">Explorer</div>
+      <div class="file-tree" id="fileTree">
+        <div class="file-item active" data-file="about"><span class="file-icon icon-js">JS</span> About.js</div>
+        <div class="file-item" data-file="skills"><span class="file-icon icon-json">{ }</span> Skills.json</div>
+        <div class="file-item" data-file="projects"><span class="file-icon icon-js">JS</span> Projects.js</div>
+        <div class="file-item" data-file="education"><span class="file-icon icon-md">M↓</span> Education.md</div>
+        <div class="file-item" data-file="contact"><span class="file-icon icon-js">JS</span> Contact.js</div>
       </div>
-      <div class="stack-row">
-        <div class="stack-tier">Server</div>
-        <div class="stack-items">
-          <span class="chip">Node.js</span>
-          <span class="chip">Express</span>
-        </div>
+      <div class="sidebar-footer">
+        Hrista Thapa<br>
+        IT Engineering · Final year
+        <a href="https://github.com/Hrista39" target="_blank" rel="noopener">→ github.com/Hrista39</a>
       </div>
-      <div class="stack-row">
-        <div class="stack-tier">Data</div>
-        <div class="stack-items">
-          <span class="chip">MongoDB</span>
-        </div>
+    </aside>
+
+    <div class="editor-pane">
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-file="about">About.js <span class="close">×</span></div>
+        <div class="tab" data-file="skills">Skills.json <span class="close">×</span></div>
+        <div class="tab" data-file="projects">Projects.js <span class="close">×</span></div>
+        <div class="tab" data-file="education">Education.md <span class="close">×</span></div>
+        <div class="tab" data-file="contact">Contact.js <span class="close">×</span></div>
       </div>
-      <div class="stack-row">
-        <div class="stack-tier">Also use</div>
-        <div class="stack-items">
-          <span class="chip alt">C++</span>
-          <span class="chip alt">Python</span>
-          <span class="chip alt">Git</span>
-        </div>
+
+      <div class="code-area" id="codeArea"></div>
+    </div>
+  </div>
+
+  <div class="terminal-wrap" id="terminalWrap">
+    <div class="terminal-header" id="terminalHeader">
+      <div class="terminal-header-left">
+        <span class="terminal-toggle-icon">▾</span>
+        <span>Terminal</span>
       </div>
+      <span style="font-size:11px; color:var(--text-dim);">type <strong style="color:var(--text)">help</strong> to start</span>
     </div>
-  </section>
-
-  <section id="work">
-    <div class="section-head">
-      <h2>Selected work</h2>
-      <span class="label">03</span>
+    <div class="terminal-body" id="terminalBody"></div>
+    <div class="term-input-row">
+      <span class="term-prompt">hrista@portfolio</span><span class="c-text">:</span><span class="term-path">~</span><span class="c-text">$&nbsp;</span>
+      <input id="term-input" type="text" autocomplete="off" spellcheck="false" aria-label="Terminal command input">
     </div>
+  </div>
 
-    <div class="project">
-      <div class="project-top">
-        <h3>Project name</h3>
-        <div class="project-links">
-          <a href="#" target="_blank" rel="noopener">Code</a>
-          <a href="#" target="_blank" rel="noopener">Live</a>
-        </div>
-      </div>
-      <p>A short, plain-language description of what this project does and the problem it solves for whoever uses it.</p>
-      <div class="project-tags">
-        <span class="tag">React</span>
-        <span class="tag">Node.js</span>
-        <span class="tag">MongoDB</span>
-      </div>
+  <div class="statusbar">
+    <div class="statusbar-left">
+      <span>⎇ main</span>
+      <span id="statusFile">About.js</span>
     </div>
-
-    <div class="project">
-      <div class="project-top">
-        <h3>Project name</h3>
-        <div class="project-links">
-          <a href="#" target="_blank" rel="noopener">Code</a>
-          <a href="#" target="_blank" rel="noopener">Live</a>
-        </div>
-      </div>
-      <p>A short, plain-language description of what this project does and the problem it solves for whoever uses it.</p>
-      <div class="project-tags">
-        <span class="tag">Express</span>
-        <span class="tag">JavaScript</span>
-      </div>
+    <div class="statusbar-right">
+      <span>UTF-8</span>
+      <span>Ln 1, Col 1</span>
     </div>
+  </div>
 
-    <div class="project">
-      <div class="project-top">
-        <h3>Project name</h3>
-        <div class="project-links">
-          <a href="#" target="_blank" rel="noopener">Code</a>
-        </div>
-      </div>
-      <p>A short, plain-language description of what this project does and the problem it solves for whoever uses it.</p>
-      <div class="project-tags">
-        <span class="tag">C++</span>
-      </div>
-    </div>
+</div>
 
-    <p class="project-note">These are placeholders — send me your project names, descriptions, and links and I'll drop them in directly.</p>
-  </section>
+<script>
+/* ---------------- File contents (as "code") ---------------- */
+const files = {
+  about: {
+    tab: "About.js",
+    status: "About.js",
+    lines: [
+      {n:1, html:'<span class="c-kw">const</span> <span class="c-text">developer</span> <span class="c-punct">=</span> <span class="c-punct">{</span>'},
+      {n:2, html:'<span class="c-text indent">name:</span> <span class="c-str">"Hrista Thapa"</span><span class="c-punct">,</span>', indent:1},
+      {n:3, html:'<span class="c-text indent">role:</span> <span class="c-str">"Full-Stack Developer"</span><span class="c-punct">,</span>', indent:1},
+      {n:4, html:'<span class="c-text indent">status:</span> <span class="c-str">"Final-year IT Engineering student"</span><span class="c-punct">,</span>', indent:1},
+      {n:5, html:'<span class="c-text indent">school:</span> <span class="c-str">"Cosmos College of Management and Technology"</span><span class="c-punct">,</span>', indent:1},
+      {n:6, html:'<span class="c-text indent">focus:</span> <span class="c-str">"MERN stack"</span><span class="c-punct">,</span>', indent:1},
+      {n:7, html:'<span class="c-text indent">bio:</span> <span class="c-str">"I like understanding a problem all the way</span>', indent:1},
+      {n:8, html:'<span class="c-str">down — from how data is modeled to how it ends</span>', indent:2},
+      {n:9, html:'<span class="c-str">up on someone&#39;s screen. I&#39;m drawn to full-stack</span>', indent:2},
+      {n:10, html:'<span class="c-str">work because I like owning a feature completely:</span>', indent:2},
+      {n:11, html:'<span class="c-str">schema, API, and the interface that uses it."</span><span class="c-punct">,</span>', indent:2},
+      {n:12, html:'<span class="c-punct">};</span>'},
+      {n:13, html:''},
+      {n:14, html:'<span class="c-comment">// run this in the terminal below ↓</span>'},
+      {n:15, html:'<span class="c-func">console</span><span class="c-punct">.</span><span class="c-func">log</span><span class="c-punct">(</span><span class="c-str">"type &#39;whoami&#39; in the terminal"</span><span class="c-punct">);</span>'},
+    ]
+  },
+  skills: {
+    tab: "Skills.json",
+    status: "Skills.json",
+    lines: [
+      {n:1, html:'<span class="c-punct">{</span>'},
+      {n:2, html:'<span class="c-str indent">"interface"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"HTML"</span><span class="c-punct">,</span> <span class="c-str">"CSS"</span><span class="c-punct">,</span> <span class="c-str">"JavaScript"</span><span class="c-punct">,</span> <span class="c-str">"React"</span><span class="c-punct">],</span>', indent:1},
+      {n:3, html:'<span class="c-str indent">"server"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"Node.js"</span><span class="c-punct">,</span> <span class="c-str">"Express"</span><span class="c-punct">],</span>', indent:1},
+      {n:4, html:'<span class="c-str indent">"data"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"MongoDB"</span><span class="c-punct">],</span>', indent:1},
+      {n:5, html:'<span class="c-str indent">"languages"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"JavaScript"</span><span class="c-punct">,</span> <span class="c-str">"C++"</span><span class="c-punct">,</span> <span class="c-str">"Python"</span><span class="c-punct">],</span>', indent:1},
+      {n:6, html:'<span class="c-str indent">"tools"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"Git"</span><span class="c-punct">]</span>', indent:1},
+      {n:7, html:'<span class="c-punct">}</span>'},
+    ]
+  },
+  projects: {
+    tab: "Projects.js",
+    status: "Projects.js",
+    lines: [
+      {n:1, html:'<span class="c-kw">const</span> <span class="c-text">projects</span> <span class="c-punct">=</span> <span class="c-punct">[</span>'},
+      {n:2, html:'<span class="c-punct">{</span>', indent:1},
+      {n:3, html:'<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>', indent:2},
+      {n:4, html:'<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>', indent:2},
+      {n:5, html:'<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"React"</span><span class="c-punct">,</span> <span class="c-str">"Node.js"</span><span class="c-punct">,</span> <span class="c-str">"MongoDB"</span><span class="c-punct">],</span>', indent:2},
+      {n:6, html:'<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a><a class="chip-link" href="#" target="_blank" rel="noopener">live ↗</a> <span class="c-punct">}</span>', indent:2},
+      {n:7, html:'<span class="c-punct">},</span>', indent:1},
+      {n:8, html:'<span class="c-punct">{</span>', indent:1},
+      {n:9, html:'<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>', indent:2},
+      {n:10, html:'<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>', indent:2},
+      {n:11, html:'<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"Express"</span><span class="c-punct">,</span> <span class="c-str">"JavaScript"</span><span class="c-punct">],</span>', indent:2},
+      {n:12, html:'<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a> <span class="c-punct">}</span>', indent:2},
+      {n:13, html:'<span class="c-punct">},</span>', indent:1},
+      {n:14, html:'<span class="c-punct">{</span>', indent:1},
+      {n:15, html:'<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>', indent:2},
+      {n:16, html:'<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>', indent:2},
+      {n:17, html:'<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"C++"</span><span class="c-punct">],</span>', indent:2},
+      {n:18, html:'<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a> <span class="c-punct">}</span>', indent:2},
+      {n:19, html:'<span class="c-punct">},</span>', indent:1},
+      {n:20, html:'<span class="c-punct">];</span>'},
+      {n:21, html:''},
+      {n:22, html:'<span class="c-comment">// placeholders — send real project names, descriptions,</span>'},
+      {n:23, html:'<span class="c-comment">// stacks and links and they&#39;ll be dropped in here.</span>'},
+    ]
+  },
+  education: {
+    tab: "Education.md",
+    status: "Education.md",
+    lines: [
+      {n:1, html:'<span class="c-kw"># Education</span>'},
+      {n:2, html:''},
+      {n:3, html:'<span class="c-func">### BE in Information Technology</span>'},
+      {n:4, html:'<span class="c-text">Cosmos College of Management and Technology</span>'},
+      {n:5, html:'<span class="c-comment">Final year</span>'},
+      {n:6, html:''},
+      {n:7, html:'<span class="c-comment">> Focused coursework in full-stack web development,</span>'},
+      {n:8, html:'<span class="c-comment">> data structures, and software engineering practice.</span>'},
+    ]
+  },
+  contact: {
+    tab: "Contact.js",
+    status: "Contact.js",
+    lines: [
+      {n:1, html:'<span class="c-kw">export</span> <span class="c-kw">const</span> <span class="c-text">contact</span> <span class="c-punct">=</span> <span class="c-punct">{</span>'},
+      {n:2, html:'<span class="c-text indent">github:</span> <a class="chip-link" href="https://github.com/Hrista39" target="_blank" rel="noopener">Hrista39 ↗</a><span class="c-punct">,</span>', indent:1},
+      {n:3, html:'<span class="c-text indent">email:</span> <a class="chip-link" href="mailto:youremail@example.com">your@email.com ↗</a><span class="c-punct">,</span>', indent:1},
+      {n:4, html:'<span class="c-text indent">availability:</span> <span class="c-str">"Open to internships & junior full-stack roles"</span><span class="c-punct">,</span>', indent:1},
+      {n:5, html:'<span class="c-punct">};</span>'},
+      {n:6, html:''},
+      {n:7, html:'<span class="c-kw">function</span> <span class="c-func">sayHello</span><span class="c-punct">()</span> <span class="c-punct">{</span>'},
+      {n:8, html:'<button class="btn-run" id="sayHelloBtn">▶ Run sayHello()</button>', indent:1},
+      {n:9, html:'<span class="c-punct">}</span>'},
+    ]
+  }
+};
 
-  <section id="education">
-    <div class="section-head">
-      <h2>Education</h2>
-      <span class="label">04</span>
-    </div>
-    <div class="edu-row">
-      <h3>BE in Information Technology</h3>
-      <span class="meta">Final year</span>
-    </div>
-    <p class="edu-sub">Cosmos College of Management and Technology</p>
-  </section>
+/* ---------------- Render a file into the editor with typing reveal ---------------- */
+const codeArea = document.getElementById('codeArea');
+let typingTimer = null;
 
-  <section id="contact" class="contact">
-    <div class="section-head">
-      <h2>Contact</h2>
-      <span class="label">05</span>
-    </div>
-    <p>I'm open to internships, junior full-stack roles, and collaborative projects. The easiest way to reach me is through GitHub for now.</p>
-    <div class="contact-grid">
-      <a class="btn" href="https://github.com/Hrista39" target="_blank" rel="noopener">GitHub — Hrista39</a>
-      <a class="btn ghost" href="mailto:youremail@example.com">Email me</a>
-    </div>
-  </section>
+function renderFile(key){
+  const file = files[key];
+  if(!file) return;
+  clearTimeout(typingTimer);
+  codeArea.innerHTML = '';
+  document.getElementById('statusFile').textContent = file.status;
 
-</main>
+  file.lines.forEach((line, i) => {
+    const row = document.createElement('div');
+    row.className = 'code-line';
+    const num = document.createElement('div');
+    num.className = 'line-num';
+    num.textContent = line.n;
+    const content = document.createElement('div');
+    content.className = 'line-content';
+    row.appendChild(num);
+    row.appendChild(content);
+    codeArea.appendChild(row);
 
-<footer>Hrista Thapa — built with HTML &amp; CSS</footer>
+    setTimeout(() => {
+      content.innerHTML = line.html;
+      if(key === 'contact' && line.n === 8){
+        const btn = document.getElementById('sayHelloBtn');
+        if(btn){
+          btn.addEventListener('click', () => {
+            printTerminalLine('<span class="c-text">Hello! Thanks for checking out my portfolio 👋</span>');
+            openTerminal();
+          });
+        }
+      }
+    }, i * 22);
+  });
+}
+
+function setActiveFile(key){
+  document.querySelectorAll('.file-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.file === key);
+  });
+  document.querySelectorAll('.tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.file === key);
+  });
+  renderFile(key);
+}
+
+document.querySelectorAll('.file-item').forEach(el => {
+  el.addEventListener('click', () => {
+    setActiveFile(el.dataset.file);
+    if(window.innerWidth <= 760) document.getElementById('sidebar').classList.remove('open');
+  });
+});
+document.querySelectorAll('.tab').forEach(el => {
+  el.addEventListener('click', () => setActiveFile(el.dataset.file));
+});
+
+document.getElementById('mobileTreeToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+renderFile('about');
+
+/* ---------------- Terminal ---------------- */
+const terminalBody = document.getElementById('terminalBody');
+const terminalInput = document.getElementById('term-input');
+const terminalWrap = document.getElementById('terminalWrap');
+
+function printTerminalLine(html){
+  const div = document.createElement('div');
+  div.className = 'term-line';
+  div.innerHTML = html;
+  terminalBody.appendChild(div);
+  terminalBody.scrollTop = terminalBody.scrollHeight;
+}
+
+function printPromptEcho(cmd){
+  printTerminalLine('<span class="term-prompt">hrista@portfolio</span><span class="c-text">:</span><span class="term-path">~</span><span class="c-text">$ ' + escapeHtml(cmd) + '</span>');
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function openTerminal(){
+  terminalWrap.classList.remove('collapsed');
+}
+
+const commands = {
+  help: () => [
+    'Available commands:',
+    '  whoami      — quick bio',
+    '  skills      — tech stack',
+    '  projects    — open Projects.js',
+    '  education   — open Education.md',
+    '  contact     — how to reach me',
+    '  github      — open my GitHub in a new tab',
+    '  clear       — clear the terminal',
+  ].join('\n'),
+  whoami: () => "Hrista Thapa — final-year IT Engineering student at Cosmos College, focused on full-stack development with the MERN stack.",
+  skills: () => { setActiveFile('skills'); return "Opened Skills.json →"; },
+  projects: () => { setActiveFile('projects'); return "Opened Projects.js →"; },
+  education: () => { setActiveFile('education'); return "Opened Education.md →"; },
+  contact: () => { setActiveFile('contact'); return "Opened Contact.js →"; },
+  github: () => { window.open('https://github.com/Hrista39', '_blank', 'noopener'); return "Opening github.com/Hrista39 ..."; },
+  clear: () => { terminalBody.innerHTML = ''; return null; },
+  ls: () => "About.js  Skills.json  Projects.js  Education.md  Contact.js",
+  sudo: () => "Permission denied: nice try though 😄",
+};
+
+function runCommand(raw){
+  const cmd = raw.trim().toLowerCase();
+  if(cmd === '') return;
+  printPromptEcho(raw);
+  if(commands[cmd]){
+    const out = commands[cmd]();
+    if(out) printTerminalLine('<span class="c-text">' + escapeHtml(out).replace(/\n/g, '<br>') + '</span>');
+  } else {
+    printTerminalLine('<span class="c-error" style="color:var(--error)">command not found: ' + escapeHtml(cmd) + '</span><br><span class="c-text">type \'help\' for a list of commands</span>');
+  }
+}
+
+terminalInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    runCommand(terminalInput.value);
+    terminalInput.value = '';
+  }
+});
+
+document.getElementById('terminalHeader').addEventListener('click', () => {
+  terminalWrap.classList.toggle('collapsed');
+});
+
+document.addEventListener('click', (e) => {
+  if(!terminalWrap.contains(e.target) && e.target !== terminalInput) return;
+});
+
+window.addEventListener('load', () => {
+  printTerminalLine('<span class="c-comment">Welcome. Type "help" to see what this terminal can do.</span>');
+  terminalInput.focus();
+});
+</script>
 
 </body>
 </html>
