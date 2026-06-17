@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hrista Thapa — Full-Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1A1B1E;
+    --accent: #4C5FD5;
+    --accent-soft: #ECEEFB;
+    --gray: #6B6D76;
+    --line: #E4E2DC;
+    --paper: #FFFFFF;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  a{ color:var(--accent); text-decoration:none; }
+  a:hover{ text-decoration:underline; }
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky;
+    top:0;
+    background:rgba(250,249,246,0.88);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    z-index:10;
+  }
+  nav{
+    max-width:760px;
+    margin:0 auto;
+    padding:18px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .nav-mark{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.05rem;
+    letter-spacing:-0.01em;
+  }
+  .nav-links{
+    display:flex;
+    gap:24px;
+    font-size:0.88rem;
+    color:var(--gray);
+  }
+  .nav-links a{ color:var(--gray); }
+  .nav-links a:hover{ color:var(--ink); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:88px 0 64px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.78rem;
+    color:var(--accent);
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:18px;
+    opacity:0;
+    animation:rise 0.6s ease forwards;
+    animation-delay:0.05s;
+  }
+  .hero h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(2.4rem, 6vw, 3.4rem);
+    line-height:1.08;
+    letter-spacing:-0.01em;
+    max-width:11ch;
+    opacity:0;
+    animation:rise 0.7s ease forwards;
+    animation-delay:0.15s;
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--accent);
+  }
+  .hero p{
+    margin-top:22px;
+    max-width:46ch;
+    color:var(--gray);
+    font-size:1.05rem;
+    opacity:0;
+    animation:rise 0.7s ease forwards;
+    animation-delay:0.28s;
+  }
+  .hero-links{
+    margin-top:30px;
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    opacity:0;
+    animation:rise 0.7s ease forwards;
+    animation-delay:0.4s;
+  }
+  .btn{
+    font-family:'Inter', sans-serif;
+    font-weight:500;
+    font-size:0.92rem;
+    padding:11px 20px;
+    border-radius:6px;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    transition:background 0.18s, color 0.18s;
+  }
+  .btn:hover{
+    background:var(--ink);
+    color:var(--bg);
+    text-decoration:none;
+  }
+  .btn.ghost{
+    border-color:var(--line);
+    color:var(--gray);
+  }
+  .btn.ghost:hover{
+    background:transparent;
+    color:var(--ink);
+    border-color:var(--ink);
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* ---------- Section scaffolding ---------- */
+  section{
+    padding:56px 0;
+    border-top:1px solid var(--line);
+  }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:36px;
+    gap:16px;
+  }
+  .section-head .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.74rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--gray);
+  }
+  .section-head h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.6rem;
+    letter-spacing:-0.01em;
+  }
+
+  /* ---------- About ---------- */
+  .about p{
+    max-width:58ch;
+    color:#33353B;
+    font-size:1.02rem;
+  }
+  .about p + p{ margin-top:14px; }
+
+  /* ---------- Stack diagram (signature element) ---------- */
+  .stack-diagram{
+    margin-top:8px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    background:var(--paper);
+  }
+  .stack-row{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    border-bottom:1px solid var(--line);
+  }
+  .stack-row:last-child{ border-bottom:none; }
+  .stack-tier{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.74rem;
+    color:var(--gray);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:16px 18px;
+    border-right:1px solid var(--line);
+    display:flex;
+    align-items:center;
+  }
+  .stack-items{
+    padding:14px 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .chip{
+    font-size:0.88rem;
+    font-weight:500;
+    padding:5px 12px;
+    border-radius:5px;
+    background:var(--accent-soft);
+    color:#3B4AA8;
+  }
+  .chip.alt{
+    background:#F1EFE9;
+    color:#56524A;
+  }
+
+  .skills-flat{
+    margin-top:36px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .skills-flat .chip{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+
+  /* ---------- Projects ---------- */
+  .project{
+    padding:28px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .project:last-child{ border-bottom:none; }
+  .project-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .project h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.22rem;
+  }
+  .project-links{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.78rem;
+    display:flex;
+    gap:14px;
+  }
+  .project p{
+    margin-top:10px;
+    color:var(--gray);
+    max-width:56ch;
+    font-size:0.97rem;
+  }
+  .project-tags{
+    margin-top:14px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    color:var(--gray);
+    border:1px solid var(--line);
+    padding:3px 9px;
+    border-radius:4px;
+  }
+  .project-note{
+    margin-top:16px;
+    font-size:0.88rem;
+    color:#9A968C;
+    border-left:2px solid var(--line);
+    padding-left:12px;
+  }
+
+  /* ---------- Education ---------- */
+  .edu-row{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    align-items:baseline;
+  }
+  .edu-row h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.15rem;
+  }
+  .edu-row .meta{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.8rem;
+    color:var(--gray);
+  }
+  .edu-sub{
+    margin-top:6px;
+    color:var(--gray);
+    font-size:0.95rem;
+  }
+
+  /* ---------- Contact / Footer ---------- */
+  .contact p{
+    max-width:48ch;
+    color:var(--gray);
+    margin-bottom:28px;
+  }
+  .contact-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  footer{
+    padding:32px 0 48px;
+    text-align:center;
+    color:#A8A59B;
+    font-size:0.82rem;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 600px){
+    .hero{ padding:64px 0 48px; }
+    .stack-row{ grid-template-columns:1fr; }
+    .stack-tier{ border-right:none; border-bottom:1px solid var(--line); padding:10px 18px; }
+    .nav-links{ gap:14px; font-size:0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <span class="nav-mark">Hrista Thapa</span>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" style="border-top:none;">
+    <span class="eyebrow">IT Engineering Student · Full-Stack Developer</span>
+    <h1>Building things end&#8209;to&#8209;end, from <em>database to interface</em>.</h1>
+    <p>I'm a final-year IT Engineering student at Cosmos College of Management and Technology, focused on full-stack development with the MERN stack. I like understanding a problem all the way down — from how data is modeled to how it ends up on someone's screen.</p>
+    <div class="hero-links">
+      <a class="btn" href="https://github.com/Hrista39" target="_blank" rel="noopener">View GitHub →</a>
+      <a class="btn ghost" href="#contact">Get in touch</a>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <div class="section-head">
+      <h2>About</h2>
+      <span class="label">01</span>
+    </div>
+    <p>I'm currently completing my final year of IT Engineering at Cosmos College of Management and Technology. Over the course of my degree I've moved from foundational programming into building full applications — pairing a React front end with an Express/Node back end and MongoDB for storage.</p>
+    <p>I'm drawn to full-stack work specifically because I like owning a feature completely: designing the schema, writing the API, and shipping the interface that makes it usable. Alongside the MERN stack, I work in C++ and Python, and use Git for version control on everything I build.</p>
+  </section>
+
+  <section id="stack">
+    <div class="section-head">
+      <h2>Stack</h2>
+      <span class="label">02</span>
+    </div>
+    <div class="stack-diagram">
+      <div class="stack-row">
+        <div class="stack-tier">Interface</div>
+        <div class="stack-items">
+          <span class="chip">HTML</span>
+          <span class="chip">CSS</span>
+          <span class="chip">JavaScript</span>
+          <span class="chip">React</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tier">Server</div>
+        <div class="stack-items">
+          <span class="chip">Node.js</span>
+          <span class="chip">Express</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tier">Data</div>
+        <div class="stack-items">
+          <span class="chip">MongoDB</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-tier">Also use</div>
+        <div class="stack-items">
+          <span class="chip alt">C++</span>
+          <span class="chip alt">Python</span>
+          <span class="chip alt">Git</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head">
+      <h2>Selected work</h2>
+      <span class="label">03</span>
+    </div>
+
+    <div class="project">
+      <div class="project-top">
+        <h3>Project name</h3>
+        <div class="project-links">
+          <a href="#" target="_blank" rel="noopener">Code</a>
+          <a href="#" target="_blank" rel="noopener">Live</a>
+        </div>
+      </div>
+      <p>A short, plain-language description of what this project does and the problem it solves for whoever uses it.</p>
+      <div class="project-tags">
+        <span class="tag">React</span>
+        <span class="tag">Node.js</span>
+        <span class="tag">MongoDB</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-top">
+        <h3>Project name</h3>
+        <div class="project-links">
+          <a href="#" target="_blank" rel="noopener">Code</a>
+          <a href="#" target="_blank" rel="noopener">Live</a>
+        </div>
+      </div>
+      <p>A short, plain-language description of what this project does and the problem it solves for whoever uses it.</p>
+      <div class="project-tags">
+        <span class="tag">Express</span>
+        <span class="tag">JavaScript</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-top">
+        <h3>Project name</h3>
+        <div class="project-links">
+          <a href="#" target="_blank" rel="noopener">Code</a>
+        </div>
+      </div>
+      <p>A short, plain-language description of what this project does and the problem it solves for whoever uses it.</p>
+      <div class="project-tags">
+        <span class="tag">C++</span>
+      </div>
+    </div>
+
+    <p class="project-note">These are placeholders — send me your project names, descriptions, and links and I'll drop them in directly.</p>
+  </section>
+
+  <section id="education">
+    <div class="section-head">
+      <h2>Education</h2>
+      <span class="label">04</span>
+    </div>
+    <div class="edu-row">
+      <h3>BE in Information Technology</h3>
+      <span class="meta">Final year</span>
+    </div>
+    <p class="edu-sub">Cosmos College of Management and Technology</p>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="section-head">
+      <h2>Contact</h2>
+      <span class="label">05</span>
+    </div>
+    <p>I'm open to internships, junior full-stack roles, and collaborative projects. The easiest way to reach me is through GitHub for now.</p>
+    <div class="contact-grid">
+      <a class="btn" href="https://github.com/Hrista39" target="_blank" rel="noopener">GitHub — Hrista39</a>
+      <a class="btn ghost" href="mailto:youremail@example.com">Email me</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>Hrista Thapa — built with HTML &amp; CSS</footer>
+
+</body>
+</html>
