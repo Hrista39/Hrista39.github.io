@@ -1,683 +1,1404 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hrista Thapa — Full-Stack Developer</title>
-<meta name="description" content="Portfolio of Hrista Thapa, full-stack developer and IT engineering student.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-editor: #1E1E1E;
-    --bg-sidebar: #252526;
-    --bg-titlebar: #323233;
-    --bg-tabs: #2D2D30;
-    --bg-active-tab: #1E1E1E;
-    --bg-terminal: #181818;
-    --border: #3C3C3C;
-    --text: #D4D4D4;
-    --text-dim: #858585;
-    --kw: #569CD6;
-    --type: #4EC9B0;
-    --str: #CE9178;
-    --comment: #6A9955;
-    --func: #DCDCAA;
-    --num: #B5CEA8;
-    --accent: #007ACC;
-    --error: #F48771;
-    --tab-active-border: #007ACC;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hrista Thapa — Portfolio IDE</title>
+    <meta
+      name="description"
+      content="Interactive portfolio of Hrista Thapa, a full-stack developer and IT engineering student."
+    />
+    <meta name="theme-color" content="#0f111a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b1020;
+        --bg-editor: rgba(16, 22, 38, 0.92);
+        --bg-sidebar: rgba(13, 18, 33, 0.94);
+        --bg-titlebar: rgba(19, 26, 45, 0.96);
+        --bg-tabs: rgba(14, 20, 37, 0.96);
+        --bg-active-tab: rgba(24, 32, 54, 0.98);
+        --bg-terminal: rgba(9, 13, 24, 0.96);
+        --border: rgba(148, 163, 184, 0.16);
+        --border-strong: rgba(148, 163, 184, 0.26);
+        --text: #ecf2ff;
+        --text-dim: #93a4c3;
+        --kw: #7cb8ff;
+        --type: #78e3cb;
+        --str: #ffbf8f;
+        --comment: #8dbf7b;
+        --func: #ffe28a;
+        --num: #b7e08f;
+        --accent: #5ea4ff;
+        --accent-2: #7f8cff;
+        --error: #ff8f7a;
+        --tab-active-border: #5ea4ff;
+      }
 
-  *{ margin:0; padding:0; box-sizing:border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-  body{
-    background:var(--bg-editor);
-    color:var(--text);
-    font-family:'JetBrains Mono', monospace;
-    font-size:14px;
-    overflow:hidden;
-    height:100vh;
-  }
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(94, 164, 255, 0.22),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at top right,
+            rgba(127, 140, 255, 0.16),
+            transparent 28%
+          ),
+          linear-gradient(180deg, #070b15 0%, #0b1020 100%);
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        overflow: hidden;
+        padding: 16px;
+      }
 
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
-  }
-
-  ::selection{ background:#264F78; }
-
-  a{ color:var(--kw); text-decoration:none; }
-  a:hover{ text-decoration:underline; }
-  *:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
-
-  .ide{
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-  }
-
-  /* ---------- Title bar ---------- */
-  .titlebar{
-    background:var(--bg-titlebar);
-    height:32px;
-    display:flex;
-    align-items:center;
-    padding:0 12px;
-    gap:8px;
-    flex-shrink:0;
-    border-bottom:1px solid var(--border);
-  }
-  .dots{ display:flex; gap:7px; }
-  .dot{ width:11px; height:11px; border-radius:50%; }
-  .dot.red{ background:#FF5F56; }
-  .dot.yellow{ background:#FFBD2E; }
-  .dot.green{ background:#27C93F; }
-  .titlebar-label{
-    flex:1;
-    text-align:center;
-    font-size:12px;
-    color:var(--text-dim);
-  }
-
-  /* ---------- Main body: sidebar + editor ---------- */
-  .body-row{
-    flex:1;
-    display:flex;
-    overflow:hidden;
-    min-height:0;
-  }
-
-  /* ---------- Sidebar ---------- */
-  .sidebar{
-    width:220px;
-    background:var(--bg-sidebar);
-    border-right:1px solid var(--border);
-    flex-shrink:0;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-  }
-  .sidebar-section-title{
-    font-size:11px;
-    letter-spacing:0.08em;
-    color:var(--text-dim);
-    padding:14px 16px 8px;
-    text-transform:uppercase;
-  }
-  .file-tree{ padding-bottom:12px; }
-  .file-item{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 16px;
-    font-size:13px;
-    color:var(--text);
-    cursor:pointer;
-    white-space:nowrap;
-    border-left:2px solid transparent;
-  }
-  .file-item:hover{ background:#2A2D2E; }
-  .file-item.active{
-    background:#37373D;
-    border-left:2px solid var(--accent);
-  }
-  .file-icon{ font-size:13px; width:14px; text-align:center; flex-shrink:0; }
-  .icon-js{ color:var(--func); }
-  .icon-json{ color:var(--type); }
-  .icon-md{ color:var(--kw); }
-
-  .sidebar-footer{
-    margin-top:auto;
-    padding:14px 16px;
-    border-top:1px solid var(--border);
-    font-size:12px;
-    color:var(--text-dim);
-  }
-  .sidebar-footer a{ color:var(--text-dim); display:block; margin-top:6px; }
-  .sidebar-footer a:hover{ color:var(--kw); }
-
-  /* ---------- Editor pane ---------- */
-  .editor-pane{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-  }
-
-  .tabs{
-    display:flex;
-    background:var(--bg-tabs);
-    border-bottom:1px solid var(--border);
-    overflow-x:auto;
-    flex-shrink:0;
-  }
-  .tab{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:9px 14px;
-    font-size:13px;
-    color:var(--text-dim);
-    border-right:1px solid var(--border);
-    cursor:pointer;
-    white-space:nowrap;
-  }
-  .tab.active{
-    background:var(--bg-active-tab);
-    color:var(--text);
-    border-top:2px solid var(--tab-active-border);
-    padding-top:7px;
-  }
-  .tab:hover{ color:var(--text); }
-  .tab .close{ opacity:0.5; font-size:14px; }
-  .tab .close:hover{ opacity:1; }
-
-  .code-area{
-    flex:1;
-    overflow-y:auto;
-    padding:24px 0 40px;
-    min-height:0;
-  }
-  .code-line{
-    display:flex;
-    padding:0 20px;
-    min-height:21px;
-    line-height:21px;
-  }
-  .line-num{
-    width:36px;
-    text-align:right;
-    margin-right:20px;
-    color:#4B4B4B;
-    flex-shrink:0;
-    user-select:none;
-    font-size:13px;
-  }
-  .line-content{
-    white-space:pre-wrap;
-    word-break:break-word;
-  }
-  .indent{ padding-left:24px; }
-  .indent2{ padding-left:48px; }
-
-  .c-kw{ color:var(--kw); }
-  .c-type{ color:var(--type); }
-  .c-str{ color:var(--str); }
-  .c-comment{ color:var(--comment); }
-  .c-func{ color:var(--func); }
-  .c-num{ color:var(--num); }
-  .c-text{ color:var(--text); }
-  .c-punct{ color:var(--text); }
-
-  .chip-link{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    background:#2A2D2E;
-    border:1px solid var(--border);
-    border-radius:4px;
-    padding:1px 8px;
-    margin:2px 4px 2px 0;
-    font-size:12.5px;
-    color:var(--type);
-  }
-  .chip-link:hover{ border-color:var(--accent); text-decoration:none; }
-
-  .btn-run{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    background:#0E639C;
-    color:#fff;
-    border:none;
-    border-radius:4px;
-    padding:6px 14px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px;
-    cursor:pointer;
-    margin-top:4px;
-  }
-  .btn-run:hover{ background:#1177BB; }
-
-  /* typing reveal */
-  .type-target{ }
-  .blink-cursor{
-    display:inline-block;
-    width:7px;
-    height:15px;
-    background:var(--text);
-    margin-left:2px;
-    animation:blink 1s step-end infinite;
-    vertical-align:middle;
-  }
-  @keyframes blink{ 50%{ opacity:0; } }
-
-  /* ---------- Terminal ---------- */
-  .terminal-wrap{
-    flex-shrink:0;
-    border-top:1px solid var(--border);
-    background:var(--bg-terminal);
-    display:flex;
-    flex-direction:column;
-    height:220px;
-    transition:height 0.2s ease;
-  }
-  .terminal-wrap.collapsed{ height:36px; }
-
-  .terminal-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 16px;
-    height:36px;
-    flex-shrink:0;
-    border-bottom:1px solid var(--border);
-    cursor:pointer;
-    user-select:none;
-  }
-  .terminal-header-left{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:12px;
-    color:var(--text-dim);
-    text-transform:uppercase;
-    letter-spacing:0.05em;
-  }
-  .terminal-toggle-icon{
-    color:var(--text-dim);
-    font-size:11px;
-    transition:transform 0.2s;
-  }
-  .terminal-wrap.collapsed .terminal-toggle-icon{ transform:rotate(-90deg); }
-
-  .terminal-body{
-    flex:1;
-    overflow-y:auto;
-    padding:10px 16px;
-    font-size:13px;
-  }
-  .term-line{ margin-bottom:4px; white-space:pre-wrap; word-break:break-word; }
-  .term-prompt{ color:var(--type); }
-  .term-path{ color:var(--kw); }
-  .term-input-row{
-    display:flex;
-    align-items:center;
-    padding:4px 16px 12px;
-    flex-shrink:0;
-  }
-  .term-input-row .term-prompt{ margin-right:6px; }
-  #term-input{
-    flex:1;
-    background:transparent;
-    border:none;
-    outline:none;
-    color:var(--text);
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px;
-  }
-
-  /* ---------- Status bar ---------- */
-  .statusbar{
-    background:var(--accent);
-    color:#fff;
-    height:22px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 12px;
-    font-size:11.5px;
-    flex-shrink:0;
-  }
-  .statusbar-left, .statusbar-right{ display:flex; gap:16px; }
-
-  /* ---------- Mobile ---------- */
-  .mobile-tree-toggle{ display:none; }
-
-  @media (max-width: 760px){
-    .sidebar{
-      position:absolute;
-      left:0; top:32px; bottom:0;
-      z-index:20;
-      transform:translateX(-100%);
-      transition:transform 0.2s ease;
-      box-shadow:2px 0 12px rgba(0,0,0,0.4);
-    }
-    .sidebar.open{ transform:translateX(0); }
-    .mobile-tree-toggle{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      background:transparent;
-      border:none;
-      color:var(--text-dim);
-      font-family:'JetBrains Mono', monospace;
-      font-size:12px;
-      padding:6px 10px;
-      cursor:pointer;
-    }
-    .terminal-wrap{ height:180px; }
-    .line-num{ width:24px; margin-right:10px; }
-    .code-line{ padding:0 12px; }
-  }
-</style>
-</head>
-<body>
-
-<div class="ide">
-
-  <div class="titlebar">
-    <div class="dots">
-      <div class="dot red"></div>
-      <div class="dot yellow"></div>
-      <div class="dot green"></div>
-    </div>
-    <div class="titlebar-label">hrista-thapa-portfolio — VS Code</div>
-    <button class="mobile-tree-toggle" id="mobileTreeToggle" aria-label="Toggle file explorer">☰ files</button>
-  </div>
-
-  <div class="body-row">
-
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-section-title">Explorer</div>
-      <div class="file-tree" id="fileTree">
-        <div class="file-item active" data-file="about"><span class="file-icon icon-js">JS</span> About.js</div>
-        <div class="file-item" data-file="skills"><span class="file-icon icon-json">{ }</span> Skills.json</div>
-        <div class="file-item" data-file="projects"><span class="file-icon icon-js">JS</span> Projects.js</div>
-        <div class="file-item" data-file="education"><span class="file-icon icon-md">M↓</span> Education.md</div>
-        <div class="file-item" data-file="contact"><span class="file-icon icon-js">JS</span> Contact.js</div>
-      </div>
-      <div class="sidebar-footer">
-        Hrista Thapa<br>
-        IT Engineering · Final year
-        <a href="https://github.com/Hrista39" target="_blank" rel="noopener">→ github.com/Hrista39</a>
-      </div>
-    </aside>
-
-    <div class="editor-pane">
-      <div class="tabs" id="tabs">
-        <div class="tab active" data-file="about">About.js <span class="close">×</span></div>
-        <div class="tab" data-file="skills">Skills.json <span class="close">×</span></div>
-        <div class="tab" data-file="projects">Projects.js <span class="close">×</span></div>
-        <div class="tab" data-file="education">Education.md <span class="close">×</span></div>
-        <div class="tab" data-file="contact">Contact.js <span class="close">×</span></div>
-      </div>
-
-      <div class="code-area" id="codeArea"></div>
-    </div>
-  </div>
-
-  <div class="terminal-wrap" id="terminalWrap">
-    <div class="terminal-header" id="terminalHeader">
-      <div class="terminal-header-left">
-        <span class="terminal-toggle-icon">▾</span>
-        <span>Terminal</span>
-      </div>
-      <span style="font-size:11px; color:var(--text-dim);">type <strong style="color:var(--text)">help</strong> to start</span>
-    </div>
-    <div class="terminal-body" id="terminalBody"></div>
-    <div class="term-input-row">
-      <span class="term-prompt">hrista@portfolio</span><span class="c-text">:</span><span class="term-path">~</span><span class="c-text">$&nbsp;</span>
-      <input id="term-input" type="text" autocomplete="off" spellcheck="false" aria-label="Terminal command input">
-    </div>
-  </div>
-
-  <div class="statusbar">
-    <div class="statusbar-left">
-      <span>⎇ main</span>
-      <span id="statusFile">About.js</span>
-    </div>
-    <div class="statusbar-right">
-      <span>UTF-8</span>
-      <span>Ln 1, Col 1</span>
-    </div>
-  </div>
-
-</div>
-
-<script>
-/* ---------------- File contents (as "code") ---------------- */
-const files = {
-  about: {
-    tab: "About.js",
-    status: "About.js",
-    lines: [
-      {n:1, html:'<span class="c-kw">const</span> <span class="c-text">developer</span> <span class="c-punct">=</span> <span class="c-punct">{</span>'},
-      {n:2, html:'<span class="c-text indent">name:</span> <span class="c-str">"Hrista Thapa"</span><span class="c-punct">,</span>', indent:1},
-      {n:3, html:'<span class="c-text indent">role:</span> <span class="c-str">"Full-Stack Developer"</span><span class="c-punct">,</span>', indent:1},
-      {n:4, html:'<span class="c-text indent">status:</span> <span class="c-str">"Final-year IT Engineering student"</span><span class="c-punct">,</span>', indent:1},
-      {n:5, html:'<span class="c-text indent">school:</span> <span class="c-str">"Cosmos College of Management and Technology"</span><span class="c-punct">,</span>', indent:1},
-      {n:6, html:'<span class="c-text indent">focus:</span> <span class="c-str">"MERN stack"</span><span class="c-punct">,</span>', indent:1},
-      {n:7, html:'<span class="c-text indent">bio:</span> <span class="c-str">"I like understanding a problem all the way</span>', indent:1},
-      {n:8, html:'<span class="c-str">down — from how data is modeled to how it ends</span>', indent:2},
-      {n:9, html:'<span class="c-str">up on someone&#39;s screen. I&#39;m drawn to full-stack</span>', indent:2},
-      {n:10, html:'<span class="c-str">work because I like owning a feature completely:</span>', indent:2},
-      {n:11, html:'<span class="c-str">schema, API, and the interface that uses it."</span><span class="c-punct">,</span>', indent:2},
-      {n:12, html:'<span class="c-punct">};</span>'},
-      {n:13, html:''},
-      {n:14, html:'<span class="c-comment">// run this in the terminal below ↓</span>'},
-      {n:15, html:'<span class="c-func">console</span><span class="c-punct">.</span><span class="c-func">log</span><span class="c-punct">(</span><span class="c-str">"type &#39;whoami&#39; in the terminal"</span><span class="c-punct">);</span>'},
-    ]
-  },
-  skills: {
-    tab: "Skills.json",
-    status: "Skills.json",
-    lines: [
-      {n:1, html:'<span class="c-punct">{</span>'},
-      {n:2, html:'<span class="c-str indent">"interface"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"HTML"</span><span class="c-punct">,</span> <span class="c-str">"CSS"</span><span class="c-punct">,</span> <span class="c-str">"JavaScript"</span><span class="c-punct">,</span> <span class="c-str">"React"</span><span class="c-punct">],</span>', indent:1},
-      {n:3, html:'<span class="c-str indent">"server"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"Node.js"</span><span class="c-punct">,</span> <span class="c-str">"Express"</span><span class="c-punct">],</span>', indent:1},
-      {n:4, html:'<span class="c-str indent">"data"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"MongoDB"</span><span class="c-punct">],</span>', indent:1},
-      {n:5, html:'<span class="c-str indent">"languages"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"JavaScript"</span><span class="c-punct">,</span> <span class="c-str">"C++"</span><span class="c-punct">,</span> <span class="c-str">"Python"</span><span class="c-punct">],</span>', indent:1},
-      {n:6, html:'<span class="c-str indent">"tools"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"Git"</span><span class="c-punct">]</span>', indent:1},
-      {n:7, html:'<span class="c-punct">}</span>'},
-    ]
-  },
-  projects: {
-    tab: "Projects.js",
-    status: "Projects.js",
-    lines: [
-      {n:1, html:'<span class="c-kw">const</span> <span class="c-text">projects</span> <span class="c-punct">=</span> <span class="c-punct">[</span>'},
-      {n:2, html:'<span class="c-punct">{</span>', indent:1},
-      {n:3, html:'<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>', indent:2},
-      {n:4, html:'<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>', indent:2},
-      {n:5, html:'<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"React"</span><span class="c-punct">,</span> <span class="c-str">"Node.js"</span><span class="c-punct">,</span> <span class="c-str">"MongoDB"</span><span class="c-punct">],</span>', indent:2},
-      {n:6, html:'<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a><a class="chip-link" href="#" target="_blank" rel="noopener">live ↗</a> <span class="c-punct">}</span>', indent:2},
-      {n:7, html:'<span class="c-punct">},</span>', indent:1},
-      {n:8, html:'<span class="c-punct">{</span>', indent:1},
-      {n:9, html:'<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>', indent:2},
-      {n:10, html:'<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>', indent:2},
-      {n:11, html:'<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"Express"</span><span class="c-punct">,</span> <span class="c-str">"JavaScript"</span><span class="c-punct">],</span>', indent:2},
-      {n:12, html:'<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a> <span class="c-punct">}</span>', indent:2},
-      {n:13, html:'<span class="c-punct">},</span>', indent:1},
-      {n:14, html:'<span class="c-punct">{</span>', indent:1},
-      {n:15, html:'<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>', indent:2},
-      {n:16, html:'<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>', indent:2},
-      {n:17, html:'<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"C++"</span><span class="c-punct">],</span>', indent:2},
-      {n:18, html:'<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a> <span class="c-punct">}</span>', indent:2},
-      {n:19, html:'<span class="c-punct">},</span>', indent:1},
-      {n:20, html:'<span class="c-punct">];</span>'},
-      {n:21, html:''},
-      {n:22, html:'<span class="c-comment">// placeholders — send real project names, descriptions,</span>'},
-      {n:23, html:'<span class="c-comment">// stacks and links and they&#39;ll be dropped in here.</span>'},
-    ]
-  },
-  education: {
-    tab: "Education.md",
-    status: "Education.md",
-    lines: [
-      {n:1, html:'<span class="c-kw"># Education</span>'},
-      {n:2, html:''},
-      {n:3, html:'<span class="c-func">### BE in Information Technology</span>'},
-      {n:4, html:'<span class="c-text">Cosmos College of Management and Technology</span>'},
-      {n:5, html:'<span class="c-comment">Final year</span>'},
-      {n:6, html:''},
-      {n:7, html:'<span class="c-comment">> Focused coursework in full-stack web development,</span>'},
-      {n:8, html:'<span class="c-comment">> data structures, and software engineering practice.</span>'},
-    ]
-  },
-  contact: {
-    tab: "Contact.js",
-    status: "Contact.js",
-    lines: [
-      {n:1, html:'<span class="c-kw">export</span> <span class="c-kw">const</span> <span class="c-text">contact</span> <span class="c-punct">=</span> <span class="c-punct">{</span>'},
-      {n:2, html:'<span class="c-text indent">github:</span> <a class="chip-link" href="https://github.com/Hrista39" target="_blank" rel="noopener">Hrista39 ↗</a><span class="c-punct">,</span>', indent:1},
-      {n:3, html:'<span class="c-text indent">email:</span> <a class="chip-link" href="mailto:youremail@example.com">your@email.com ↗</a><span class="c-punct">,</span>', indent:1},
-      {n:4, html:'<span class="c-text indent">availability:</span> <span class="c-str">"Open to internships & junior full-stack roles"</span><span class="c-punct">,</span>', indent:1},
-      {n:5, html:'<span class="c-punct">};</span>'},
-      {n:6, html:''},
-      {n:7, html:'<span class="c-kw">function</span> <span class="c-func">sayHello</span><span class="c-punct">()</span> <span class="c-punct">{</span>'},
-      {n:8, html:'<button class="btn-run" id="sayHelloBtn">▶ Run sayHello()</button>', indent:1},
-      {n:9, html:'<span class="c-punct">}</span>'},
-    ]
-  }
-};
-
-/* ---------------- Render a file into the editor with typing reveal ---------------- */
-const codeArea = document.getElementById('codeArea');
-let typingTimer = null;
-
-function renderFile(key){
-  const file = files[key];
-  if(!file) return;
-  clearTimeout(typingTimer);
-  codeArea.innerHTML = '';
-  document.getElementById('statusFile').textContent = file.status;
-
-  file.lines.forEach((line, i) => {
-    const row = document.createElement('div');
-    row.className = 'code-line';
-    const num = document.createElement('div');
-    num.className = 'line-num';
-    num.textContent = line.n;
-    const content = document.createElement('div');
-    content.className = 'line-content';
-    row.appendChild(num);
-    row.appendChild(content);
-    codeArea.appendChild(row);
-
-    setTimeout(() => {
-      content.innerHTML = line.html;
-      if(key === 'contact' && line.n === 8){
-        const btn = document.getElementById('sayHelloBtn');
-        if(btn){
-          btn.addEventListener('click', () => {
-            printTerminalLine('<span class="c-text">Hello! Thanks for checking out my portfolio 👋</span>');
-            openTerminal();
-          });
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
         }
       }
-    }, i * 22);
-  });
-}
 
-function setActiveFile(key){
-  document.querySelectorAll('.file-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.file === key);
-  });
-  document.querySelectorAll('.tab').forEach(el => {
-    el.classList.toggle('active', el.dataset.file === key);
-  });
-  renderFile(key);
-}
+      ::selection {
+        background: #264f78;
+      }
 
-document.querySelectorAll('.file-item').forEach(el => {
-  el.addEventListener('click', () => {
-    setActiveFile(el.dataset.file);
-    if(window.innerWidth <= 760) document.getElementById('sidebar').classList.remove('open');
-  });
-});
-document.querySelectorAll('.tab').forEach(el => {
-  el.addEventListener('click', () => setActiveFile(el.dataset.file));
-});
+      a {
+        color: var(--kw);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      *:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
 
-document.getElementById('mobileTreeToggle').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('open');
-});
+      .ide {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 32px);
+        max-width: 1380px;
+        margin: 0 auto;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px);
+      }
 
-renderFile('about');
+      /* ---------- Title bar ---------- */
+      .titlebar {
+        background: var(--bg-titlebar);
+        height: 32px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        gap: 8px;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .dots {
+        display: flex;
+        gap: 7px;
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .dot.red {
+        background: #ff5f56;
+      }
+      .dot.yellow {
+        background: #ffbd2e;
+      }
+      .dot.green {
+        background: #27c93f;
+      }
+      .titlebar-label {
+        flex: 1;
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-dim);
+      }
 
-/* ---------------- Terminal ---------------- */
-const terminalBody = document.getElementById('terminalBody');
-const terminalInput = document.getElementById('term-input');
-const terminalWrap = document.getElementById('terminalWrap');
+      /* ---------- Main body: sidebar + editor ---------- */
+      .body-row {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        min-height: 0;
+      }
 
-function printTerminalLine(html){
-  const div = document.createElement('div');
-  div.className = 'term-line';
-  div.innerHTML = html;
-  terminalBody.appendChild(div);
-  terminalBody.scrollTop = terminalBody.scrollHeight;
-}
+      /* ---------- Sidebar ---------- */
+      .sidebar {
+        width: 220px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border);
+        flex-shrink: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-section-title {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--text-dim);
+        padding: 14px 16px 8px;
+        text-transform: uppercase;
+      }
+      .file-tree {
+        padding-bottom: 12px;
+      }
+      .file-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        font-size: 13px;
+        color: var(--text);
+        cursor: pointer;
+        white-space: nowrap;
+        border-left: 2px solid transparent;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      .file-item:hover {
+        background: #2a2d2e;
+      }
+      .file-item.active {
+        background: rgba(94, 164, 255, 0.12);
+        border-left: 2px solid var(--accent);
+      }
+      .file-icon {
+        font-size: 13px;
+        width: 14px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .icon-js {
+        color: var(--func);
+      }
+      .icon-json {
+        color: var(--type);
+      }
+      .icon-md {
+        color: var(--kw);
+      }
 
-function printPromptEcho(cmd){
-  printTerminalLine('<span class="term-prompt">hrista@portfolio</span><span class="c-text">:</span><span class="term-path">~</span><span class="c-text">$ ' + escapeHtml(cmd) + '</span>');
-}
+      .sidebar-footer {
+        margin-top: auto;
+        padding: 14px 16px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+      .signal-card {
+        margin: 12px 16px 0;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(94, 164, 255, 0.1),
+          rgba(127, 140, 255, 0.06)
+        );
+      }
+      .signal-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .signal-card-title {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+      }
+      .signal-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #b9f3c4;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      .signal-pill::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #7dc691;
+        box-shadow: 0 0 10px rgba(125, 198, 145, 0.55);
+      }
+      .signal-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .signal-item {
+        min-width: 0;
+      }
+      .signal-label {
+        display: block;
+        margin-bottom: 3px;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+      }
+      .signal-value {
+        display: block;
+        color: var(--text);
+        font-size: 12px;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+      .sidebar-footer a {
+        color: var(--text-dim);
+        display: block;
+        margin-top: 6px;
+      }
+      .sidebar-footer a:hover {
+        color: var(--kw);
+      }
 
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
+      /* ---------- Editor pane ---------- */
+      .editor-pane {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
 
-function openTerminal(){
-  terminalWrap.classList.remove('collapsed');
-}
+      .tabs {
+        display: flex;
+        background: var(--bg-tabs);
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+      .tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        font-size: 13px;
+        color: var(--text-dim);
+        border-right: 1px solid var(--border);
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .tab.active {
+        background: var(--bg-active-tab);
+        color: var(--text);
+        border-top: 2px solid var(--tab-active-border);
+        padding-top: 7px;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab .close {
+        opacity: 0.5;
+        font-size: 14px;
+      }
+      .tab .close:hover {
+        opacity: 1;
+      }
 
-const commands = {
-  help: () => [
-    'Available commands:',
-    '  whoami      — quick bio',
-    '  skills      — tech stack',
-    '  projects    — open Projects.js',
-    '  education   — open Education.md',
-    '  contact     — how to reach me',
-    '  github      — open my GitHub in a new tab',
-    '  clear       — clear the terminal',
-  ].join('\n'),
-  whoami: () => "Hrista Thapa — final-year IT Engineering student at Cosmos College, focused on full-stack development with the MERN stack.",
-  skills: () => { setActiveFile('skills'); return "Opened Skills.json →"; },
-  projects: () => { setActiveFile('projects'); return "Opened Projects.js →"; },
-  education: () => { setActiveFile('education'); return "Opened Education.md →"; },
-  contact: () => { setActiveFile('contact'); return "Opened Contact.js →"; },
-  github: () => { window.open('https://github.com/Hrista39', '_blank', 'noopener'); return "Opening github.com/Hrista39 ..."; },
-  clear: () => { terminalBody.innerHTML = ''; return null; },
-  ls: () => "About.js  Skills.json  Projects.js  Education.md  Contact.js",
-  sudo: () => "Permission denied: nice try though 😄",
-};
+      .code-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 0 40px;
+        min-height: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.015),
+          transparent 18%
+        );
+      }
+      .code-line {
+        display: flex;
+        padding: 0 20px;
+        min-height: 21px;
+        line-height: 21px;
+      }
+      .line-num {
+        width: 36px;
+        text-align: right;
+        margin-right: 20px;
+        color: #62708f;
+        flex-shrink: 0;
+        user-select: none;
+        font-size: 13px;
+      }
+      .line-content {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .indent {
+        padding-left: 24px;
+      }
+      .indent2 {
+        padding-left: 48px;
+      }
 
-function runCommand(raw){
-  const cmd = raw.trim().toLowerCase();
-  if(cmd === '') return;
-  printPromptEcho(raw);
-  if(commands[cmd]){
-    const out = commands[cmd]();
-    if(out) printTerminalLine('<span class="c-text">' + escapeHtml(out).replace(/\n/g, '<br>') + '</span>');
-  } else {
-    printTerminalLine('<span class="c-error" style="color:var(--error)">command not found: ' + escapeHtml(cmd) + '</span><br><span class="c-text">type \'help\' for a list of commands</span>');
-  }
-}
+      .c-kw {
+        color: var(--kw);
+      }
+      .c-type {
+        color: var(--type);
+      }
+      .c-str {
+        color: var(--str);
+      }
+      .c-comment {
+        color: var(--comment);
+      }
+      .c-func {
+        color: var(--func);
+      }
+      .c-num {
+        color: var(--num);
+      }
+      .c-text {
+        color: var(--text);
+      }
+      .c-punct {
+        color: var(--text);
+      }
 
-terminalInput.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){
-    runCommand(terminalInput.value);
-    terminalInput.value = '';
-  }
-});
+      .chip-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #2a2d2e;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1px 8px;
+        margin: 2px 4px 2px 0;
+        font-size: 12.5px;
+        color: var(--type);
+      }
+      .chip-link:hover {
+        border-color: var(--accent);
+        text-decoration: none;
+      }
+      .c-error {
+        color: var(--error);
+      }
 
-document.getElementById('terminalHeader').addEventListener('click', () => {
-  terminalWrap.classList.toggle('collapsed');
-});
+      .btn-run {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #0e639c;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 14px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        cursor: pointer;
+        margin-top: 4px;
+      }
+      .btn-run:hover {
+        background: #1177bb;
+      }
 
-document.addEventListener('click', (e) => {
-  if(!terminalWrap.contains(e.target) && e.target !== terminalInput) return;
-});
+      /* typing reveal */
+      .blink-cursor {
+        display: inline-block;
+        width: 7px;
+        height: 15px;
+        background: var(--text);
+        margin-left: 2px;
+        animation: blink 1s step-end infinite;
+        vertical-align: middle;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
 
-window.addEventListener('load', () => {
-  printTerminalLine('<span class="c-comment">Welcome. Type "help" to see what this terminal can do.</span>');
-  terminalInput.focus();
-});
-</script>
+      /* ---------- Terminal ---------- */
+      .terminal-wrap {
+        flex-shrink: 0;
+        border-top: 1px solid var(--border);
+        background: var(--bg-terminal);
+        display: flex;
+        flex-direction: column;
+        height: 220px;
+        transition: height 0.2s ease;
+      }
+      .terminal-wrap.collapsed {
+        height: 36px;
+      }
 
-</body>
+      .terminal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        height: 36px;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        user-select: none;
+      }
+      .terminal-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .terminal-toggle-icon {
+        color: var(--text-dim);
+        font-size: 11px;
+        transition: transform 0.2s;
+      }
+      .terminal-wrap.collapsed .terminal-toggle-icon {
+        transform: rotate(-90deg);
+      }
+
+      .terminal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+      .term-line {
+        margin-bottom: 4px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .term-prompt {
+        color: var(--type);
+      }
+      .term-path {
+        color: var(--kw);
+      }
+      .term-input-row {
+        display: flex;
+        align-items: center;
+        padding: 4px 16px 12px;
+        flex-shrink: 0;
+      }
+      .term-input-row .term-prompt {
+        margin-right: 6px;
+      }
+      #term-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+      }
+
+      .term-hint {
+        font-size: 11px;
+        color: var(--text-dim);
+        white-space: nowrap;
+      }
+
+      /* ---------- Status bar ---------- */
+      .statusbar {
+        background: linear-gradient(
+          90deg,
+          rgba(94, 164, 255, 0.9),
+          rgba(127, 140, 255, 0.95)
+        );
+        color: #f8fbff;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        font-size: 11.5px;
+        flex-shrink: 0;
+      }
+      .statusbar-left,
+      .statusbar-right {
+        display: flex;
+        gap: 16px;
+      }
+
+      /* ---------- Mobile ---------- */
+      .mobile-tree-toggle {
+        display: none;
+      }
+
+      @media (max-width: 760px) {
+        body {
+          padding: 0;
+        }
+        .ide {
+          height: 100vh;
+          max-width: none;
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
+        }
+        .sidebar {
+          position: absolute;
+          left: 0;
+          top: 32px;
+          bottom: 0;
+          z-index: 20;
+          transform: translateX(-100%);
+          transition: transform 0.2s ease;
+          box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .mobile-tree-toggle {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: transparent;
+          border: none;
+          color: var(--text-dim);
+          font-family: "JetBrains Mono", monospace;
+          font-size: 12px;
+          padding: 6px 10px;
+          cursor: pointer;
+        }
+        .terminal-wrap {
+          height: 180px;
+        }
+        .line-num {
+          width: 24px;
+          margin-right: 10px;
+        }
+        .code-line {
+          padding: 0 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ide">
+      <div class="titlebar">
+        <div class="dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        <div class="titlebar-label">hrista-thapa-portfolio — VS Code</div>
+        <button
+          class="mobile-tree-toggle"
+          id="mobileTreeToggle"
+          aria-label="Toggle file explorer"
+        >
+          ☰ files
+        </button>
+      </div>
+
+      <div class="body-row">
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-section-title">Explorer</div>
+          <div class="file-tree" id="fileTree">
+            <div class="file-item active" data-file="about">
+              <span class="file-icon icon-js">JS</span> About.js
+            </div>
+            <div class="file-item" data-file="skills">
+              <span class="file-icon icon-json">{ }</span> Skills.json
+            </div>
+            <div class="file-item" data-file="projects">
+              <span class="file-icon icon-js">JS</span> Projects.js
+            </div>
+            <div class="file-item" data-file="education">
+              <span class="file-icon icon-md">M↓</span> Education.md
+            </div>
+            <div class="file-item" data-file="contact">
+              <span class="file-icon icon-js">JS</span> Contact.js
+            </div>
+          </div>
+          <div class="signal-card" aria-label="Portfolio signal dashboard">
+            <div class="signal-card-header">
+              <span class="signal-card-title">Signal</span>
+              <span class="signal-pill" id="signalMode">Available</span>
+            </div>
+            <div class="signal-grid">
+              <div class="signal-item">
+                <span class="signal-label">Focus</span>
+                <span class="signal-value" id="signalFocus">About.js</span>
+              </div>
+              <div class="signal-item">
+                <span class="signal-label">Commands</span>
+                <span class="signal-value" id="signalCommands">0</span>
+              </div>
+              <div class="signal-item">
+                <span class="signal-label">Latest move</span>
+                <span class="signal-value" id="signalLast">/help</span>
+              </div>
+              <div class="signal-item">
+                <span class="signal-label">Next best</span>
+                <span class="signal-value" id="signalNext">/projects</span>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-footer">
+            Hrista Thapa<br />
+            IT Engineering · Final year
+            <a href="https://github.com/Hrista39" target="_blank" rel="noopener"
+              >→ github.com/Hrista39</a
+            >
+          </div>
+        </aside>
+
+        <div class="editor-pane">
+          <div class="tabs" id="tabs">
+            <div class="tab active" data-file="about">
+              About.js <span class="close">×</span>
+            </div>
+            <div class="tab" data-file="skills">
+              Skills.json <span class="close">×</span>
+            </div>
+            <div class="tab" data-file="projects">
+              Projects.js <span class="close">×</span>
+            </div>
+            <div class="tab" data-file="education">
+              Education.md <span class="close">×</span>
+            </div>
+            <div class="tab" data-file="contact">
+              Contact.js <span class="close">×</span>
+            </div>
+          </div>
+
+          <div class="code-area" id="codeArea"></div>
+        </div>
+      </div>
+
+      <div class="terminal-wrap" id="terminalWrap">
+        <div class="terminal-header" id="terminalHeader">
+          <div class="terminal-header-left">
+            <span class="terminal-toggle-icon">▾</span>
+            <span>Terminal</span>
+          </div>
+          <span class="term-hint"
+            >try <strong style="color: var(--text)">/help</strong>,
+            <strong style="color: var(--text)">projects</strong>, or
+            <strong style="color: var(--text)">github</strong></span
+          >
+        </div>
+        <div class="terminal-body" id="terminalBody"></div>
+        <div class="term-input-row">
+          <span class="term-prompt">hrista@portfolio</span
+          ><span class="c-text">:</span><span class="term-path">~</span
+          ><span class="c-text">$&nbsp;</span>
+          <input
+            id="term-input"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Terminal command input"
+          />
+        </div>
+      </div>
+
+      <div class="statusbar">
+        <div class="statusbar-left">
+          <span>⎇ main</span>
+          <span id="statusFile">About.js</span>
+        </div>
+        <div class="statusbar-right">
+          <span>UTF-8</span>
+          <span>Ln 1, Col 1</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ---------------- File contents (as "code") ---------------- */
+      const files = {
+        about: {
+          tab: "About.js",
+          status: "About.js",
+          lines: [
+            {
+              n: 1,
+              html: '<span class="c-kw">const</span> <span class="c-text">developer</span> <span class="c-punct">=</span> <span class="c-punct">{</span>',
+            },
+            {
+              n: 2,
+              html: '<span class="c-text indent">name:</span> <span class="c-str">"Hrista Thapa"</span><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 3,
+              html: '<span class="c-text indent">role:</span> <span class="c-str">"Full-Stack Developer"</span><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 4,
+              html: '<span class="c-text indent">status:</span> <span class="c-str">"Final-year IT Engineering student"</span><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 5,
+              html: '<span class="c-text indent">school:</span> <span class="c-str">"Cosmos College of Management and Technology"</span><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 6,
+              html: '<span class="c-text indent">focus:</span> <span class="c-str">"MERN stack"</span><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 7,
+              html: '<span class="c-text indent">bio:</span> <span class="c-str">"I like taking a feature from first sketch to</span>',
+              indent: 1,
+            },
+            {
+              n: 8,
+              html: '<span class="c-str">finished product — shaping the data model, API,</span>',
+              indent: 2,
+            },
+            {
+              n: 9,
+              html: '<span class="c-str">and interface so the whole thing feels deliberate."</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            { n: 12, html: '<span class="c-punct">};</span>' },
+            { n: 13, html: "" },
+            {
+              n: 14,
+              html: '<span class="c-comment">// run this in the terminal below ↓</span>',
+            },
+            {
+              n: 15,
+              html: '<span class="c-func">console</span><span class="c-punct">.</span><span class="c-func">log</span><span class="c-punct">(</span><span class="c-str">"type /help in the terminal"</span><span class="c-punct">);</span>',
+            },
+          ],
+        },
+        skills: {
+          tab: "Skills.json",
+          status: "Skills.json",
+          lines: [
+            { n: 1, html: '<span class="c-punct">{</span>' },
+            {
+              n: 2,
+              html: '<span class="c-str indent">"interface"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"HTML"</span><span class="c-punct">,</span> <span class="c-str">"CSS"</span><span class="c-punct">,</span> <span class="c-str">"JavaScript"</span><span class="c-punct">,</span> <span class="c-str">"React"</span><span class="c-punct">],</span>',
+              indent: 1,
+            },
+            {
+              n: 3,
+              html: '<span class="c-str indent">"server"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"Node.js"</span><span class="c-punct">,</span> <span class="c-str">"Express"</span><span class="c-punct">],</span>',
+              indent: 1,
+            },
+            {
+              n: 4,
+              html: '<span class="c-str indent">"data"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"MongoDB"</span><span class="c-punct">],</span>',
+              indent: 1,
+            },
+            {
+              n: 5,
+              html: '<span class="c-str indent">"languages"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"JavaScript"</span><span class="c-punct">,</span> <span class="c-str">"C++"</span><span class="c-punct">,</span> <span class="c-str">"Python"</span><span class="c-punct">],</span>',
+              indent: 1,
+            },
+            {
+              n: 6,
+              html: '<span class="c-str indent">"tools"</span><span class="c-punct">:</span> <span class="c-punct">[</span><span class="c-str">"Git"</span><span class="c-punct">]</span>',
+              indent: 1,
+            },
+            { n: 7, html: '<span class="c-punct">}</span>' },
+          ],
+        },
+        projects: {
+          tab: "Projects.js",
+          status: "Projects.js",
+          lines: [
+            {
+              n: 1,
+              html: '<span class="c-kw">const</span> <span class="c-text">projects</span> <span class="c-punct">=</span> <span class="c-punct">[</span>',
+            },
+            { n: 2, html: '<span class="c-punct">{</span>', indent: 1 },
+            {
+              n: 3,
+              html: '<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            {
+              n: 4,
+              html: '<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            {
+              n: 5,
+              html: '<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"React"</span><span class="c-punct">,</span> <span class="c-str">"Node.js"</span><span class="c-punct">,</span> <span class="c-str">"MongoDB"</span><span class="c-punct">],</span>',
+              indent: 2,
+            },
+            {
+              n: 6,
+              html: '<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a><a class="chip-link" href="#" target="_blank" rel="noopener">live ↗</a> <span class="c-punct">}</span>',
+              indent: 2,
+            },
+            { n: 7, html: '<span class="c-punct">},</span>', indent: 1 },
+            { n: 8, html: '<span class="c-punct">{</span>', indent: 1 },
+            {
+              n: 9,
+              html: '<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            {
+              n: 10,
+              html: '<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            {
+              n: 11,
+              html: '<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"Express"</span><span class="c-punct">,</span> <span class="c-str">"JavaScript"</span><span class="c-punct">],</span>',
+              indent: 2,
+            },
+            {
+              n: 12,
+              html: '<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a> <span class="c-punct">}</span>',
+              indent: 2,
+            },
+            { n: 13, html: '<span class="c-punct">},</span>', indent: 1 },
+            { n: 14, html: '<span class="c-punct">{</span>', indent: 1 },
+            {
+              n: 15,
+              html: '<span class="c-text indent">name:</span> <span class="c-str">"Project name"</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            {
+              n: 16,
+              html: '<span class="c-text indent">description:</span> <span class="c-str">"Short description of what it does."</span><span class="c-punct">,</span>',
+              indent: 2,
+            },
+            {
+              n: 17,
+              html: '<span class="c-text indent">stack:</span> <span class="c-punct">[</span><span class="c-str">"C++"</span><span class="c-punct">],</span>',
+              indent: 2,
+            },
+            {
+              n: 18,
+              html: '<span class="c-text indent">links:</span> <span class="c-punct">{</span> <a class="chip-link" href="#" target="_blank" rel="noopener">code ↗</a> <span class="c-punct">}</span>',
+              indent: 2,
+            },
+            { n: 19, html: '<span class="c-punct">},</span>', indent: 1 },
+            { n: 20, html: '<span class="c-punct">];</span>' },
+            { n: 21, html: "" },
+          ],
+        },
+        education: {
+          tab: "Education.md",
+          status: "Education.md",
+          lines: [
+            { n: 1, html: '<span class="c-kw"># Education</span>' },
+            { n: 2, html: "" },
+            {
+              n: 3,
+              html: '<span class="c-func">### BE in Information Technology</span>',
+            },
+            {
+              n: 4,
+              html: '<span class="c-text">Cosmos College of Management and Technology</span>',
+            },
+            {
+              n: 5,
+              html: '<span class="c-comment">Final year, building a stronger foundation in practical</span>',
+            },
+            { n: 6, html: "" },
+            {
+              n: 7,
+              html: '<span class="c-comment">> coursework in full-stack web development, data structures,</span>',
+            },
+            {
+              n: 8,
+              html: '<span class="c-comment">> software engineering practice, and project-based problem solving.</span>',
+            },
+            {
+              n: 9,
+              html: '<span class="c-comment">> Focused on writing code that is clear, maintainable, and ready</span>',
+            },
+            {
+              n: 10,
+              html: '<span class="c-comment">> to translate into real-world products and team environments.</span>',
+            },
+          ],
+        },
+        contact: {
+          tab: "Contact.js",
+          status: "Contact.js",
+          lines: [
+            {
+              n: 1,
+              html: '<span class="c-kw">export</span> <span class="c-kw">const</span> <span class="c-text">contact</span> <span class="c-punct">=</span> <span class="c-punct">{</span>',
+            },
+            {
+              n: 2,
+              html: '<span class="c-text indent">github:</span> <a class="chip-link" href="https://github.com/Hrista39" target="_blank" rel="noopener">Hrista39 ↗</a><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 3,
+              html: '<span class="c-text indent">email:</span> <a class="chip-link" href="mailto:thapahrista01@gmail.com">thapahrista01@gmail.com ↗</a><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            {
+              n: 4,
+              html: '<span class="c-text indent">availability:</span> <span class="c-str">"Open to internships & junior full-stack roles"</span><span class="c-punct">,</span>',
+              indent: 1,
+            },
+            { n: 5, html: '<span class="c-punct">};</span>' },
+            { n: 6, html: "" },
+            {
+              n: 7,
+              html: '<span class="c-kw">function</span> <span class="c-func">sayHello</span><span class="c-punct">()</span> <span class="c-punct">{</span>',
+            },
+            {
+              n: 8,
+              html: '<button class="btn-run" id="sayHelloBtn">▶ Run sayHello()</button>',
+              indent: 1,
+            },
+            { n: 9, html: '<span class="c-punct">}</span>' },
+          ],
+        },
+      };
+
+      /* ---------------- Render a file into the editor with typing reveal ---------------- */
+      const codeArea = document.getElementById("codeArea");
+      let typingTimer = null;
+
+      function renderFile(key) {
+        const file = files[key];
+        if (!file) return;
+        clearTimeout(typingTimer);
+        codeArea.innerHTML = "";
+        document.getElementById("statusFile").textContent = file.status;
+
+        file.lines.forEach((line, i) => {
+          const row = document.createElement("div");
+          row.className = "code-line";
+          const num = document.createElement("div");
+          num.className = "line-num";
+          num.textContent = line.n;
+          const content = document.createElement("div");
+          content.className = "line-content";
+          row.appendChild(num);
+          row.appendChild(content);
+          codeArea.appendChild(row);
+
+          setTimeout(() => {
+            content.innerHTML = line.html;
+            if (key === "contact" && line.n === 8) {
+              const btn = document.getElementById("sayHelloBtn");
+              if (btn) {
+                btn.addEventListener("click", () => {
+                  printTerminalLine(
+                    '<span class="c-text">Hello. Thanks for checking out my portfolio.</span>',
+                  );
+                  openTerminal();
+                });
+              }
+            }
+          }, i * 22);
+        });
+      }
+
+      function setActiveFile(key) {
+        document.querySelectorAll(".file-item").forEach((el) => {
+          el.classList.toggle("active", el.dataset.file === key);
+        });
+        document.querySelectorAll(".tab").forEach((el) => {
+          el.classList.toggle("active", el.dataset.file === key);
+        });
+        currentFocus = files[key].tab;
+        refreshSignalPanel();
+        renderFile(key);
+      }
+
+      document.querySelectorAll(".file-item").forEach((el) => {
+        el.addEventListener("click", () => {
+          setActiveFile(el.dataset.file);
+          if (window.innerWidth <= 760)
+            document.getElementById("sidebar").classList.remove("open");
+        });
+      });
+      document.querySelectorAll(".tab").forEach((el) => {
+        el.addEventListener("click", () => setActiveFile(el.dataset.file));
+      });
+
+      document
+        .getElementById("mobileTreeToggle")
+        .addEventListener("click", () => {
+          document.getElementById("sidebar").classList.toggle("open");
+        });
+
+      renderFile("about");
+
+      /* ---------------- Terminal ---------------- */
+      const terminalBody = document.getElementById("terminalBody");
+      const terminalInput = document.getElementById("term-input");
+      const terminalWrap = document.getElementById("terminalWrap");
+      const signalMode = document.getElementById("signalMode");
+      const signalFocus = document.getElementById("signalFocus");
+      const signalCommands = document.getElementById("signalCommands");
+      const signalLast = document.getElementById("signalLast");
+      const signalNext = document.getElementById("signalNext");
+      const fileOrder = ["about", "skills", "projects", "education", "contact"];
+      const commandHistory = [];
+      let historyIndex = -1;
+      let commandCount = 0;
+      let sectionSwitches = 1;
+      let currentFocus = "About.js";
+      let latestMove = "/help";
+
+      function getSignalMode() {
+        const options = ["Available", "Focused", "Shipping", "Exploring"];
+        const stamp = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${commandCount + sectionSwitches}`;
+        let hash = 0;
+        for (let index = 0; index < stamp.length; index += 1) {
+          hash = (hash * 31 + stamp.charCodeAt(index)) % 9973;
+        }
+        return options[hash % options.length];
+      }
+
+      function refreshSignalPanel() {
+        signalMode.textContent = getSignalMode();
+        signalFocus.textContent = currentFocus;
+        signalCommands.textContent = String(commandCount);
+        signalLast.textContent = latestMove;
+        signalNext.textContent =
+          currentFocus === "About.js"
+            ? "/projects"
+            : currentFocus === "Projects.js"
+              ? "/contact"
+              : "/signal";
+      }
+
+      function printTerminalLine(html) {
+        const div = document.createElement("div");
+        div.className = "term-line";
+        div.innerHTML = html;
+        terminalBody.appendChild(div);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+      }
+
+      function printPromptEcho(cmd) {
+        printTerminalLine(
+          '<span class="term-prompt">hrista@portfolio</span><span class="c-text">:</span><span class="term-path">~</span><span class="c-text">$ ' +
+            escapeHtml(cmd) +
+            "</span>",
+        );
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function openTerminal() {
+        terminalWrap.classList.remove("collapsed");
+      }
+
+      function openSection(key) {
+        if (!files[key]) return `Unknown section: ${key}`;
+        setActiveFile(key);
+        sectionSwitches += 1;
+        currentFocus = files[key].tab;
+        refreshSignalPanel();
+        return `Opened ${files[key].tab} →`;
+      }
+
+      function renderHelp() {
+        const rows = ["Available commands:", ""];
+
+        commandDefinitions.forEach((definition) => {
+          rows.push(`  ${definition.usage.padEnd(18)} ${definition.summary}`);
+        });
+
+        rows.push(
+          "",
+          "Tips:",
+          "  • Commands work with or without a leading slash.",
+          "  • Use the Up/Down arrows for command history.",
+          "  • Tab autocompletes the first matching command.",
+        );
+
+        return rows.join("\n");
+      }
+
+      const commandDefinitions = [
+        {
+          names: ["help", "/help", "?"],
+          summary: "Show every command",
+          usage: "/help",
+          run: () => renderHelp(),
+        },
+        {
+          names: ["whoami", "about", "/about", "home"],
+          summary: "Show the intro section",
+          usage: "/about",
+          run: () => openSection("about"),
+        },
+        {
+          names: ["skills", "/skills"],
+          summary: "Open the skills file",
+          usage: "/skills",
+          run: () => openSection("skills"),
+        },
+        {
+          names: ["projects", "/projects"],
+          summary: "Open the projects file",
+          usage: "/projects",
+          run: () => openSection("projects"),
+        },
+        {
+          names: ["education", "/education"],
+          summary: "Open the education file",
+          usage: "/education",
+          run: () => openSection("education"),
+        },
+        {
+          names: ["contact", "/contact", "email"],
+          summary: "Open contact details",
+          usage: "/contact",
+          run: () => openSection("contact"),
+        },
+        {
+          names: ["github", "/github", "repo"],
+          summary: "Open GitHub in a new tab",
+          usage: "/github",
+          run: () => {
+            window.open("https://github.com/Hrista39", "_blank", "noopener");
+            return "Opening github.com/Hrista39 ...";
+          },
+        },
+        {
+          names: ["signal", "/signal"],
+          summary: "Show the live portfolio signal",
+          usage: "/signal",
+          run: () => {
+            const lines = [
+              "Portfolio signal report",
+              `  status     ${signalMode.textContent}`,
+              `  focus      ${currentFocus}`,
+              `  commands   ${commandCount}`,
+              `  latest     ${latestMove}`,
+              `  next move  ${signalNext.textContent}`,
+            ];
+            return lines.join("\n");
+          },
+        },
+        {
+          names: ["ls", "dir", "files"],
+          summary: "List all sections",
+          usage: "ls",
+          run: () => fileOrder.map((key) => files[key].tab).join("  "),
+        },
+        {
+          names: ["open"],
+          summary: "Open a section by name",
+          usage: "open projects",
+          run: (args) => {
+            const target = (args[0] || "").toLowerCase();
+            const matched = fileOrder.find(
+              (key) =>
+                key === target || files[key].tab.toLowerCase() === target,
+            );
+            return matched
+              ? openSection(matched)
+              : "Usage: open <about|skills|projects|education|contact>";
+          },
+        },
+        {
+          names: ["echo"],
+          summary: "Print text back to you",
+          usage: "echo hello",
+          run: (args) => args.join(" "),
+        },
+        {
+          names: ["clear", "cls"],
+          summary: "Clear the terminal",
+          usage: "clear",
+          run: () => {
+            terminalBody.innerHTML = "";
+            return null;
+          },
+        },
+        {
+          names: ["toggle", "collapse"],
+          summary: "Toggle the terminal open state",
+          usage: "toggle",
+          run: () => {
+            terminalWrap.classList.toggle("collapsed");
+            return terminalWrap.classList.contains("collapsed")
+              ? "Terminal collapsed."
+              : "Terminal expanded.";
+          },
+        },
+        {
+          names: ["sudo"],
+          summary: "Fails on purpose",
+          usage: "sudo make me a coffee",
+          run: () => "Permission denied: nice try though",
+        },
+      ];
+
+      const commandLookup = new Map();
+      commandDefinitions.forEach((definition) => {
+        definition.names.forEach((name) => {
+          commandLookup.set(name.replace(/^\/+/, "").toLowerCase(), definition);
+        });
+      });
+
+      function normalizeCommand(raw) {
+        const trimmed = raw.trim();
+        if (!trimmed) return null;
+        const stripped = trimmed.replace(/^\/+/, "");
+        const parts = stripped.split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return null;
+        return {
+          name: parts[0].toLowerCase(),
+          args: parts.slice(1),
+          raw: trimmed,
+        };
+      }
+
+      function getSuggestions(prefix) {
+        const unique = new Set();
+        commandDefinitions.forEach((definition) => {
+          definition.names.forEach((name) => {
+            const normalized = name.replace(/^\/+/, "").toLowerCase();
+            if (
+              normalized.startsWith(prefix) &&
+              !unique.has(definition.usage)
+            ) {
+              unique.add(definition.usage);
+            }
+          });
+        });
+        return [...unique];
+      }
+
+      function runCommand(raw) {
+        const parsed = normalizeCommand(raw);
+        if (!parsed) return;
+
+        printPromptEcho(raw);
+        commandCount += 1;
+        latestMove = parsed.raw.startsWith("/")
+          ? parsed.raw
+          : `/${parsed.raw.split(/\s+/)[0]}`;
+        refreshSignalPanel();
+
+        const command = commandLookup.get(parsed.name);
+        if (command) {
+          const out = command.run(parsed.args, parsed.raw);
+          if (out !== null && out !== undefined && out !== "") {
+            printTerminalLine(
+              '<span class="c-text">' +
+                escapeHtml(String(out)).replace(/\n/g, "<br>") +
+                "</span>",
+            );
+          }
+          return;
+        }
+
+        printTerminalLine(
+          '<span class="c-error">command not found: ' +
+            escapeHtml(parsed.raw) +
+            '</span><br><span class="c-text">type /help for a list of commands</span>',
+        );
+      }
+
+      terminalInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const value = terminalInput.value;
+          if (value.trim()) {
+            commandHistory.unshift(value);
+            historyIndex = -1;
+          }
+          runCommand(value);
+          terminalInput.value = "";
+        } else if (e.key === "ArrowUp") {
+          if (commandHistory.length === 0) return;
+          e.preventDefault();
+          historyIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+          terminalInput.value = commandHistory[historyIndex] || "";
+        } else if (e.key === "ArrowDown") {
+          if (commandHistory.length === 0) return;
+          e.preventDefault();
+          historyIndex = Math.max(historyIndex - 1, -1);
+          terminalInput.value =
+            historyIndex === -1 ? "" : commandHistory[historyIndex];
+        } else if (e.key === "Tab") {
+          const current = terminalInput.value
+            .trim()
+            .replace(/^\/+/, "")
+            .toLowerCase();
+          if (!current) return;
+          const matches = getSuggestions(current);
+          if (matches.length === 1) {
+            e.preventDefault();
+            terminalInput.value = matches[0];
+          } else if (matches.length > 1) {
+            e.preventDefault();
+            printTerminalLine(
+              '<span class="c-comment">' +
+                escapeHtml(matches.join("  ")) +
+                "</span>",
+            );
+          }
+        }
+      });
+
+      document
+        .getElementById("terminalHeader")
+        .addEventListener("click", () => {
+          terminalWrap.classList.toggle("collapsed");
+        });
+
+      terminalWrap.addEventListener("click", () => {
+        terminalInput.focus();
+      });
+
+      window.addEventListener("load", () => {
+        printTerminalLine(
+          '<span class="c-comment">Welcome. Type /help to see everything this terminal can do.</span>',
+        );
+        printTerminalLine(
+          '<span class="c-comment">Quick start: /about, /projects, /github</span>',
+        );
+        refreshSignalPanel();
+        terminalInput.focus();
+      });
+    </script>
+  </body>
 </html>
